@@ -2,7 +2,7 @@
 
 Clean room research tool for reverse engineering and inspecting game1.js browser fingerprinting.
 
-**Live Demo**: https://opencodegames.github.io/gf-game1-playground/
+**Live Demo**: https://gorlikitsme.github.io/game1-js-inspector/
 
 ## Overview
 
@@ -90,7 +90,7 @@ Decryption:
 ## Project Structure
 
 ```
-gf-game1-playground/
+game1-js-inspector/
 ├── .github/workflows/deploy.yml  # GitHub Actions workflow
 ├── src/
 │   ├── components/
