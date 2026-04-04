@@ -110,3 +110,7 @@ gf-game1-playground/
 ## License
 
 MIT - For educational and security research purposes only.
+
+## Credits
+
+- OpenCode with Kimi K2.5
