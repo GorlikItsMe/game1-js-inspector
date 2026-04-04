@@ -1,0 +1,100 @@
+name: Archive Game1 Script Daily
+
+on:
+  schedule:
+    # Run daily at 00:05 UTC (adjust as needed)
+    - cron: '5 0 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Download game1.js
+        run: |
+          mkdir -p /tmp/download
+          curl -sL "https://gameforge.com/tra/game1.js" -o /tmp/download/game1.js
+          
+          if [ ! -f /tmp/download/game1.js ]; then
+            echo "Error: Failed to download file"
+            exit 1
+          fi
+          
+          FILE_SIZE=$(stat -c%s /tmp/download/game1.js)
+          echo "Downloaded file size: $FILE_SIZE bytes"
+          
+          if [ "$FILE_SIZE" -eq 0 ]; then
+            echo "Error: Downloaded file is empty"
+            exit 1
+          fi
+      
+      - name: Calculate hash of downloaded file
+        id: new_hash
+        run: |
+          HASH=$(md5sum /tmp/download/game1.js | cut -d' ' -f1)
+          echo "hash=$HASH" >> $GITHUB_OUTPUT
+          echo "New file hash: $HASH"
+      
+      - name: Check for duplicates against latest version
+        id: check_dup
+        run: |
+          ARCHIVE_DIR="archived_game1_scripts"
+          NEW_HASH="${{ steps.new_hash.outputs.hash }}"
+          IS_DUPLICATE="false"
+          
+          # Find the most recent archive by looking at folder names (timestamp format)
+          if [ -d "$ARCHIVE_DIR" ]; then
+            LATEST_DIR=$(ls -1 "$ARCHIVE_DIR" 2>/dev/null | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{6}$' | sort -r | head -1)
+            
+            if [ -n "$LATEST_DIR" ] && [ -f "$ARCHIVE_DIR/$LATEST_DIR/game1.js" ]; then
+              LATEST_HASH=$(md5sum "$ARCHIVE_DIR/$LATEST_DIR/game1.js" | cut -d' ' -f1)
+              echo "Latest archive: $LATEST_DIR with hash: $LATEST_HASH"
+              
+              if [ "$LATEST_HASH" = "$NEW_HASH" ]; then
+                echo "Duplicate detected! File is identical to latest version."
+                IS_DUPLICATE="true"
+              fi
+            fi
+          fi
+          
+          echo "is_duplicate=$IS_DUPLICATE" >> $GITHUB_OUTPUT
+      
+      - name: Create archive folder if file is new
+        if: steps.check_dup.outputs.is_duplicate == 'false'
+        run: |
+          ARCHIVE_DIR="archived_game1_scripts"
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H%M%S")
+          FOLDER_NAME="${TIMESTAMP}"
+          
+          mkdir -p "$ARCHIVE_DIR/$FOLDER_NAME"
+          
+          # Copy the file directly (no compression, easy git diff)
+          cp /tmp/download/game1.js "$ARCHIVE_DIR/$FOLDER_NAME/game1.js"
+          
+          echo "Created archive folder: $ARCHIVE_DIR/$FOLDER_NAME"
+          echo "folder_name=$FOLDER_NAME" >> $GITHUB_ENV
+      
+      - name: Commit and push new archive
+        if: steps.check_dup.outputs.is_duplicate == 'false'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          
+          git add archived_game1_scripts/
+          git commit -m "Archive new game1.js version - ${{ env.folder_name }}"
+          git push
+          
+          echo "Successfully archived new version in folder: ${{ env.folder_name }}"
+      
+      - name: Skip message if duplicate
+        if: steps.check_dup.outputs.is_duplicate == 'true'
+        run: |
+          echo "File is identical to the latest version. No new archive created."

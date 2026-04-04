@@ -1,0 +1,108 @@
+{
+  "metadata": {
+    "created": "2026-04-04T18:27:27.335300",
+    "version": "1.0"
+  },
+  "fingerprints": [
+    {
+      "id": "57717d733d91357e",
+      "timestamp": "2026-04-04T18:27:27.335354",
+      "browser": "Firefox",
+      "os": "Windows",
+      "protection_level": "none",
+      "notes": "Normal browsing",
+      "data": {
+        "0": 12,
+        "3": "Firefox",
+        "2": "Windows",
+        "24": "10",
+        "8": "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123",
+        "10": "def456def456def456def456def456def456def456def456def456def456def456def456def456def456def456def456",
+        "11": "ghi789ghi789ghi789ghi789ghi789ghi789ghi789ghi789ghi789ghi789ghi789ghi789ghi789ghi789ghi789ghi789",
+        "9": "NVIDIA GTX 980",
+        "1": "Europe/Warsaw"
+      },
+      "stats": {
+        "field_count": 9,
+        "hash_count": 0,
+        "hardware_bits": 0,
+        "data_size": 415
+      }
+    },
+    {
+      "id": "c361bda86e08e87e",
+      "timestamp": "2026-04-04T18:27:27.335606",
+      "browser": "Firefox",
+      "os": "Windows",
+      "protection_level": "privacy.resistFingerprinting",
+      "notes": "RFP enabled",
+      "data": {
+        "0": 12,
+        "3": "Firefox",
+        "2": "Windows",
+        "24": "10",
+        "8": "spoof1spoof1spoof1spoof1spoof1spoof1spoof1spoof1spoof1spoof1spoof1spoof1spoof1spoof1spoof1spoof1",
+        "10": "spoof2spoof2spoof2spoof2spoof2spoof2spoof2spoof2spoof2spoof2spoof2spoof2spoof2spoof2spoof2spoof2",
+        "11": "spoof3spoof3spoof3spoof3spoof3spoof3spoof3spoof3spoof3spoof3spoof3spoof3spoof3spoof3spoof3spoof3",
+        "9": "Standard GPU",
+        "1": "UTC"
+      },
+      "stats": {
+        "field_count": 9,
+        "hash_count": 0,
+        "hardware_bits": 0,
+        "data_size": 403
+      }
+    },
+    {
+      "id": "beb6e4e2b0641204",
+      "timestamp": "2026-04-04T18:27:27.335936",
+      "browser": "Chrome",
+      "os": "Windows",
+      "protection_level": "none",
+      "notes": "Same hardware",
+      "data": {
+        "0": 12,
+        "3": "Chrome",
+        "2": "Windows",
+        "24": "10",
+        "8": "chr123chr123chr123chr123chr123chr123chr123chr123chr123chr123chr123chr123chr123chr123chr123chr123",
+        "10": "def456def456def456def456def456def456def456def456def456def456def456def456def456def456def456def456",
+        "11": "chr789chr789chr789chr789chr789chr789chr789chr789chr789chr789chr789chr789chr789chr789chr789chr789",
+        "9": "NVIDIA GTX 980",
+        "1": "Europe/Warsaw"
+      },
+      "stats": {
+        "field_count": 9,
+        "hash_count": 0,
+        "hardware_bits": 0,
+        "data_size": 414
+      }
+    },
+    {
+      "id": "a26a32ca32e0b9fd",
+      "timestamp": "2026-04-04T18:27:27.346253",
+      "browser": "Safari",
+      "os": "macOS",
+      "protection_level": "none",
+      "notes": "Different hardware",
+      "data": {
+        "0": 8,
+        "3": "Safari",
+        "2": "Mac OS",
+        "24": "14",
+        "8": "saf123saf123saf123saf123saf123saf123saf123saf123saf123saf123saf123saf123saf123saf123saf123saf123",
+        "10": "saf456saf456saf456saf456saf456saf456saf456saf456saf456saf456saf456saf456saf456saf456saf456saf456",
+        "11": "saf789saf789saf789saf789saf789saf789saf789saf789saf789saf789saf789saf789saf789saf789saf789saf789",
+        "9": "Apple M1 Pro",
+        "1": "America/Los_Angeles"
+      },
+      "stats": {
+        "field_count": 9,
+        "hash_count": 0,
+        "hardware_bits": 0,
+        "data_size": 416
+      }
+    }
+  ]
+}

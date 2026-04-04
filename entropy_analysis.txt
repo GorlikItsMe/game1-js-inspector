@@ -1,0 +1,116 @@
+======================================================================
+FINGERPRINT ENTROPY ANALYSIS REPORT
+======================================================================
+
+Samples analyzed: 5
+
+----------------------------------------------------------------------
+OVERALL FINGERPRINT ENTROPY
+----------------------------------------------------------------------
+Total Information Content: 28.5 bits
+Fields Contributing: 15
+High Entropy Fields (>4 bits): 0
+Low Entropy Fields (<2 bits): 12
+
+Theoretical Population Distinguishable: 10,077,696
+Uniqueness Assessment: May have collisions
+
+Reference Points:
+  IPv4 address space: 32 bits (4.3 billion addresses)
+  IPv6 address space: 128 bits (3.4×10³⁸ addresses)
+  UUID: 122 bits (unique across all time)
+  This fingerprint: 28.5 bits
+
+----------------------------------------------------------------------
+TOP IDENTIFYING FIELDS (Highest Entropy)
+----------------------------------------------------------------------
+
+1. [8] Canvas Hash
+   Entropy: 2.32 bits █
+   📊 MEDIUM: Identifies among hundreds of users
+
+2. [11] Audio Hash
+   Entropy: 2.32 bits █
+   📊 MEDIUM: Identifies among hundreds of users
+
+3. [16] Font Hash
+   Entropy: 2.32 bits █
+   📊 MEDIUM: Identifies among hundreds of users
+
+4. [0] CPU Cores
+   Entropy: 1.92 bits 
+   ℹ️  LOW: Limited identifying power
+
+5. [1] Timezone
+   Entropy: 1.92 bits 
+   ℹ️  LOW: Limited identifying power
+
+6. [5] RAM
+   Entropy: 1.92 bits 
+   ℹ️  LOW: Limited identifying power
+
+7. [7] Languages
+   Entropy: 1.92 bits 
+   ℹ️  LOW: Limited identifying power
+
+8. [9] GPU Info
+   Entropy: 1.92 bits 
+   ℹ️  LOW: Limited identifying power
+
+9. [10] WebGL Hash
+   Entropy: 1.92 bits 
+   ℹ️  LOW: Limited identifying power
+
+10. [12] Screen Width
+   Entropy: 1.92 bits 
+   ℹ️  LOW: Limited identifying power
+
+----------------------------------------------------------------------
+ENTROPY BY CATEGORY
+----------------------------------------------------------------------
+
+Hardware Fingerprints: 8.88 bits
+   [8] Canvas Hash: 2.32 bits █
+   [10] WebGL Hash: 1.92 bits 
+   [11] Audio Hash: 2.32 bits █
+   [16] Fonts: 2.32 bits █
+
+System Info: 9.60 bits
+   [0] Field 0: 1.92 bits 
+   [5] Field 5: 1.92 bits 
+   [9] Field 9: 1.92 bits 
+   [12] Field 12: 1.92 bits 
+   [13] Field 13: 1.92 bits 
+
+Browser/OS: 8.10 bits
+   [2] Field 2: 1.37 bits 
+   [3] Field 3: 1.37 bits 
+   [6] Field 6: 1.52 bits 
+   [7] Field 7: 1.92 bits 
+   [24] Field 24: 1.92 bits 
+
+Metadata: 0.00 bits
+
+Security: 0.00 bits
+
+======================================================================
+PRIVACY IMPACT ASSESSMENT
+======================================================================
+
+Hardware Fingerprint Entropy: 8.88 bits
+
+✓ LOW PRIVACY RISK
+   Hardware fingerprint has limited identifying power
+   Cross-browser tracking: INEFFECTIVE
+
+----------------------------------------------------------------------
+RECOMMENDATIONS
+----------------------------------------------------------------------
+
+This fingerprint has MODERATE information content.
+Basic protections sufficient:
+  1. Use standard privacy extensions
+  2. Clear cookies regularly
+  3. Use VPN for IP masking
+
+======================================================================
