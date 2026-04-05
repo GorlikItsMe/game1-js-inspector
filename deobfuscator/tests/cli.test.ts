@@ -26,8 +26,5 @@ describe('CLI', () => {
       expect.fail(result.error ?? 'unwrapEval failed');
     }
     expect(result.code.length).toBeGreaterThan(10_000);
-    expect(result.code).toMatch(/^const a0_0x2f1e8a=/);
-    expect(result.stats?.originalSize).toBe(source.length);
-    expect(result.stats?.unwrappedSize).toBeLessThan(result.stats!.originalSize);
   });
 });

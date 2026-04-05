@@ -9,33 +9,96 @@ export interface UnwrapEvalResult {
   };
 }
 
+function findMatchingQuote(code: string, startQuotePos: number): number {
+  const quote = code[startQuotePos];
+  let i = startQuotePos + 1;
+  let escaped = false;
+
+  while (i < code.length) {
+    const char = code[i];
+
+    if (escaped) {
+      escaped = false;
+      i++;
+      continue;
+    }
+
+    if (char === '\\') {
+      escaped = true;
+      i++;
+      continue;
+    }
+
+    if (char === quote) {
+      return i;
+    }
+
+    i++;
+  }
+
+  return -1;
+}
+
 export function unwrapEval(code: string): UnwrapEvalResult {
   const originalSize = code.length;
 
-  const evalStart = 'try{eval(\'';
-  const evalEnd = '\')}';
-
-  const startIndex = code.indexOf(evalStart);
-  if (startIndex === -1) {
+  const evalCallStart = code.indexOf('eval(');
+  if (evalCallStart === -1) {
     return {
       code: code,
-      success: false,
-      error: 'No eval wrapper found (expected try{eval(\'...\')})',
+      success: true,
+      stats: {
+        originalSize,
+        unwrappedSize: originalSize,
+        bytesRemoved: 0,
+      },
     };
   }
 
-  const contentStart = startIndex + evalStart.length;
+  const openParenPos = evalCallStart + 4;
+  const afterParenPos = openParenPos + 1;
 
-  const endIndex = code.lastIndexOf(evalEnd);
-  if (endIndex === -1 || endIndex <= contentStart) {
+  if (afterParenPos >= code.length) {
     return {
       code: code,
       success: false,
-      error: 'Could not find closing \')} for eval',
+      error: 'Malformed eval call - no content after eval(',
     };
   }
 
-  const unwrappedCode = code.substring(contentStart, endIndex);
+  const quoteChar = code[afterParenPos];
+  if (quoteChar !== '\'' && quoteChar !== '"') {
+    return {
+      code: code,
+      success: false,
+      error: 'Expected string literal inside eval()',
+    };
+  }
+
+  const closingQuotePos = findMatchingQuote(code, afterParenPos);
+  if (closingQuotePos === -1) {
+    return {
+      code: code,
+      success: false,
+      error: 'Could not find closing quote for eval string',
+    };
+  }
+
+  const closingParenPos = closingQuotePos + 1;
+  if (code[closingParenPos] !== ')') {
+    return {
+      code: code,
+      success: false,
+      error: 'Could not find closing ) for eval',
+    };
+  }
+
+  const evalContent = code.substring(afterParenPos + 1, closingQuotePos);
+
+  const beforeEval = code.substring(0, evalCallStart);
+  const afterEval = code.substring(closingParenPos + 1);
+  const unwrappedCode = beforeEval + evalContent + afterEval;
+
   const unwrappedSize = unwrappedCode.length;
   const bytesRemoved = originalSize - unwrappedSize;
 
