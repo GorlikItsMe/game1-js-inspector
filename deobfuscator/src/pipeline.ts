@@ -1,6 +1,7 @@
 import { unwrapEval } from "./steps/unwrap-eval.js";
 import { deobfuscateObfuscatorIo } from "./steps/obfuscator-io.js";
 import { convertHexLiterals } from "./steps/convert-hex-literals.js";
+import { inlineStringDecoder } from "./steps/inline-string-decoder.js";
 
 export function runStep<T extends object>(
     stepName: string,
@@ -37,6 +38,10 @@ export function runAllSteps(code: string): string {
 
     code = runStep('Step 3: Convert Hex Literals', convertHexLiterals, code, (stats) => {
         console.log(`  Converted ${stats.convertedCount}/${stats.originalCount} hex literals (threshold: 4096)`);
+    });
+
+    code = runStep('Step 4: Inline String Decoder', inlineStringDecoder, code, (stats) => {
+        console.log(`  Inlined ${stats.inlinedCalls}/${stats.totalCalls} decoder calls (${stats.skippedVariableCalls} skipped - variable args)`);
     });
 
     return code;
