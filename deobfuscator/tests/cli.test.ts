@@ -28,7 +28,7 @@ describe('CLI', () => {
   it('exposes unwrap-eval command', () => {
     const commands = program.commands.map((cmd) => cmd.name());
     expect(commands).toContain('unwrap-eval');
-    expect(commands).toContain('decode-strings');
+    expect(commands).toContain('obfuscator-io');
     expect(commands).toContain('deobfuscate');
   });
 

@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { readFileSync, writeFileSync } from 'fs';
 import { unwrapEval } from './steps/unwrap-eval.js';
-import { decodeStringArray } from './steps/decode-string-array.js';
+import { deobfuscateObfuscatorIo } from './steps/obfuscator-io.js';
 import { runAllSteps } from './pipeline.js';
 
 export const program = new Command();
@@ -61,20 +61,20 @@ program
   });
 
 program
-  .command('decode-strings')
-  .description('Decode obfuscated string array')
+  .command('obfuscator-io')
+  .description('Run obfuscator-io-deobfuscator on the file')
   .argument('<input>', 'Input file path')
-  .argument('[output]', 'Output file path (default: <input>.decoded.js)')
+  .argument('[output]', 'Output file path (default: <input>.obfuscator-io.js)')
   .action((input: string, output?: string) => {
     runSingleCommand(
       input,
       output,
-      '.decoded.js',
-      decodeStringArray,
+      '.obfuscator-io.js',
+      deobfuscateObfuscatorIo,
       (stats) => {
-        console.log(`  Strings decoded: ${stats.stringsDecoded.toLocaleString()}`);
-        console.log(`  Original size:   ${stats.originalSize.toLocaleString()} bytes`);
-        console.log(`  Decoded size:    ${stats.decodedSize.toLocaleString()} bytes`);
+        console.log(`  Original size:      ${stats.originalSize.toLocaleString()} bytes`);
+        console.log(`  Deobfuscated size:  ${stats.deobfuscatedSize.toLocaleString()} bytes`);
+        console.log(`  Bytes delta:        ${stats.bytesDelta.toLocaleString()} bytes`);
       }
     );
   });

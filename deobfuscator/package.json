@@ -15,7 +15,8 @@
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:game1": "tsx src/index.ts deobfuscate ../archived_game1_scripts/2026-04-02T004842/game1.js game1.deobfuscated.js"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +25,8 @@
     "@babel/parser": "^7.29.2",
     "@babel/traverse": "^7.29.0",
     "@babel/types": "^7.29.0",
-    "commander": "^14.0.3"
+    "commander": "^14.0.3",
+    "obfuscator-io-deobfuscator": "^1.0.6"
   },
   "devDependencies": {
     "@types/babel__core": "^7.20.5",

@@ -1,5 +1,5 @@
 import { unwrapEval } from "./steps/unwrap-eval.js";
-import { decodeStringArray } from "./steps/decode-string-array.js";
+import { deobfuscateObfuscatorIo } from "./steps/obfuscator-io.js";
 
 export function runStep<T extends object>(
     stepName: string,
@@ -28,8 +28,11 @@ export function runAllSteps(code: string): string {
         console.log(`  Removed ${stats.bytesRemoved.toLocaleString()} bytes`);
     });
 
-    code = runStep('Step 2: Decode String Array', decodeStringArray, code, (stats) => {
-        console.log(`  Decoded ${stats.stringsDecoded.toLocaleString()} strings`);
+    code = runStep('Step 2: Obfuscator.io (library)', deobfuscateObfuscatorIo, code, (stats) => {
+        console.log(
+            `  ${stats.originalSize.toLocaleString()} → ${stats.deobfuscatedSize.toLocaleString()} bytes (Δ ${stats.bytesDelta.toLocaleString()}, positive = shorter)`
+        );
     });
-    return code
+
+    return code;
 }
