@@ -12,7 +12,7 @@ export interface ConvertHexResult {
 // Threshold for converting hex to decimal (4096 = 0x1000)
 // Change this value to adjust which hex literals get converted
 // const HEX_CONVERT_THRESHOLD = 0x1000;
-const HEX_CONVERT_THRESHOLD = 255;
+const HEX_CONVERT_THRESHOLD = 9000000;
 
 export function convertHexLiterals(code: string): ConvertHexResult {
   const hexPattern = /\b0x[0-9a-fA-F]+\b/g;
