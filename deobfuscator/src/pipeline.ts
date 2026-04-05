@@ -2,6 +2,7 @@ import { unwrapEval } from "./steps/unwrap-eval.js";
 import { deobfuscateObfuscatorIo } from "./steps/obfuscator-io.js";
 import { convertHexLiterals } from "./steps/convert-hex-literals.js";
 import { inlineStringDecoder } from "./steps/inline-string-decoder.js";
+import { simplifyPropertyAccess } from "./steps/simplify-property-access.js";
 
 export function runStep<T extends object>(
     stepName: string,
@@ -42,6 +43,10 @@ export function runAllSteps(code: string): string {
 
     code = runStep('Step 4: Inline String Decoder', inlineStringDecoder, code, (stats) => {
         console.log(`  Inlined ${stats.inlinedCalls}/${stats.totalCalls} decoder calls (${stats.skippedVariableCalls} skipped - variable args)`);
+    });
+
+    code = runStep('Step 5: Simplify Property Access', simplifyPropertyAccess, code, (stats) => {
+        console.log(`  Converted ${stats.convertedToDot}/${stats.totalBracketAccesses} bracket accesses to dot notation`);
     });
 
     return code;
