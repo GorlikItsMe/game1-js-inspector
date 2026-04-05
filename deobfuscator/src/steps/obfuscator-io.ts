@@ -14,6 +14,7 @@ export interface ObfuscatorIoResult {
 export function deobfuscateObfuscatorIo(code: string): ObfuscatorIoResult {
   const originalSize = code.length;
   try {
+    // No config: obfuscator-io-deobfuscator uses defaultConfig (all transformations enabled).
     const deobfuscated = obfuscatorIoDeobfuscate(code);
     const deobfuscatedSize = deobfuscated.length;
     return {
