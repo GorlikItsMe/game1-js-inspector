@@ -55,6 +55,10 @@ describe('CLI', () => {
         const source = readFileSync(path, 'utf-8');
         const result = runAllSteps(source);
         expect(result).toBeDefined();
+
+        // this is not how Date() can be called
+        expect(result).not.contain('new Date()["https://gameforge.com/tra/game1.js"]()')
+        expect(result).contain('new Date().getTime()');
       });
     }
   });

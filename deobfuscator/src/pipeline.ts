@@ -38,7 +38,7 @@ export function runAllSteps(code: string): string {
     });
 
     code = runStep('Step 3: Convert Hex Literals', convertHexLiterals, code, (stats) => {
-        console.log(`  Converted ${stats.convertedCount}/${stats.originalCount} hex literals (threshold: 4096)`);
+        console.log(`  Converted ${stats.convertedCount}/${stats.originalCount} hex literals`);
     });
 
     code = runStep('Step 4: Inline String Decoder', inlineStringDecoder, code, (stats) => {

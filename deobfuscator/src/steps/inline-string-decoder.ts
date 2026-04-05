@@ -2,6 +2,7 @@ import { parse } from "@babel/parser";
 import _traverse from "@babel/traverse";
 import _generate from "@babel/generator";
 import * as t from "@babel/types";
+import { createContext, runInContext } from "node:vm";
 
 const traverse = (_traverse as any).default || _traverse;
 const generate = (_generate as any).default || _generate;
@@ -20,9 +21,8 @@ export interface InlineStringResult {
 
 interface DecoderInfo {
   name: string;
-  arrayName: string;
-  offset: number;
-  aliases: Set<string>;
+  dependencies: string[]; // Names of functions this decoder calls
+  functionCode: string;
 }
 
 export function inlineStringDecoder(code: string): InlineStringResult {
@@ -48,26 +48,42 @@ export function inlineStringDecoder(code: string): InlineStringResult {
       };
     }
 
-    // Step 2: Find all aliases for each decoder
-    findAliases(ast, decoders);
+    console.log(`[Debug] Found ${decoders.length} decoder functions`);
+    for (const d of decoders) {
+      console.log(`[Debug] Decoder: ${d.name}, deps: [${d.dependencies.join(', ')}]`);
+    }
 
-    // Step 3: Extract string arrays for each decoder
-    const decoderArrays = new Map<string, string[]>();
-    for (const decoder of decoders) {
-      const array = extractStringArray(ast, decoder.arrayName);
-      if (array) {
-        decoderArrays.set(decoder.name, array);
-      }
+    // Step 2: Extract complete code for all decoders and their dependencies
+    extractCompleteCode(ast, decoders);
+
+    // Step 3: Create VM context with all decoder functions
+    const vmContext = createDecoderVM(code, decoders);
+    if (!vmContext) {
+      return {
+        code,
+        success: false,
+        error: "Failed to create VM context",
+      };
     }
 
     // Step 4: Replace all decoder calls with actual strings
+    let callCount = 0;
     traverse(ast, {
       CallExpression(path: any) {
         const { node } = path;
+        
+        callCount++;
+        if (callCount <= 5) {
+          console.log(`[Debug] Call #${callCount}: ${node.callee?.name || 'unknown'}(${node.arguments[0]?.value || '?'})`);
+        }
 
         // Check if this is a decoder call
-        const decoderInfo = getDecoderForCall(node, decoders);
-        if (!decoderInfo) return;
+        const decoderName = getDecoderName(node, decoders);
+        if (!decoderName) return;
+        
+        if (callCount <= 5) {
+          console.log(`[Debug] -> Recognized as decoder call to ${decoderName}`);
+        }
 
         totalCalls++;
 
@@ -75,26 +91,30 @@ export function inlineStringDecoder(code: string): InlineStringResult {
         const arg = node.arguments[0];
         if (!arg || !t.isNumericLiteral(arg)) {
           skippedVariableCalls++;
-          console.warn(
-            `Warning: Skipping decoder call with non-literal argument at line ${node.loc?.start.line}`
-          );
           return;
         }
 
-        const index = arg.value - decoderInfo.offset;
-        const array = decoderArrays.get(decoderInfo.name);
+        const argValue = arg.value;
 
-        if (!array || index < 0 || index >= array.length) {
+        // Execute decoder in VM to get the actual string
+        try {
+          const result = runInContext(`${decoderName}(${argValue})`, vmContext);
+          
+          // Debug specific values
+          if (argValue === 569 || argValue === 409) {
+            console.log(`[Debug] VM ${decoderName}(${argValue}) = "${result}"`);
+          }
+
+          if (typeof result !== "string") {
+            skippedUnresolved++;
+            return;
+          }
+
+          path.replaceWith(t.stringLiteral(result));
+          inlinedCalls++;
+        } catch (err) {
           skippedUnresolved++;
-          console.warn(
-            `Warning: Cannot resolve decoder call at line ${node.loc?.start.line}: index ${index} out of bounds`
-          );
-          return;
         }
-
-        const actualString = array[index];
-        path.replaceWith(t.stringLiteral(actualString));
-        inlinedCalls++;
       },
     });
 
@@ -122,104 +142,159 @@ export function inlineStringDecoder(code: string): InlineStringResult {
 
 function findDecoderFunctions(ast: t.File): DecoderInfo[] {
   const decoders: DecoderInfo[] = [];
-  let functionCount = 0;
 
-  // Simple visitor pattern
-  const visitor = {
+  traverse(ast, {
     FunctionDeclaration(path: any) {
       const { node } = path;
-      functionCount++;
-      
       if (!node.id) return;
 
       const body = node.body.body;
       if (body.length < 3) return;
 
-      // Look for: _0x4cc654 = _0x4cc654 - 0x12f
+      // Look for: _0x4cc654 = _0x4cc654 - 0x12f (offset pattern)
       const offsetMatch = findOffsetSubtraction(body);
       if (!offsetMatch) return;
 
-      // Look for: const _0x259908 = a0_0x2599()
+      // Look for: const _0x259908 = a0_0x2599() (array call)
       const arrayCall = findArrayFunctionCall(body);
       if (!arrayCall) return;
 
-      // Look for pattern: let x = array[index]; return x;
-      // OR: return array[index];
-      let returnVarName: string | null = null;
-      let arrayVarName: string | null = null;
-      let indexVarName: string | null = null;
-
-      // First, check for direct return: return _0x259908[_0x4cc654]
-      const returnStmt = body.find((stmt: t.Statement) => t.isReturnStatement(stmt)) as t.ReturnStatement | undefined;
-      if (returnStmt) {
-        if (t.isMemberExpression(returnStmt.argument)) {
-          // Direct return: return _0x259908[_0x4cc654]
-          const memberExpr = returnStmt.argument;
-          if (t.isIdentifier(memberExpr.object) && t.isIdentifier(memberExpr.property)) {
-            arrayVarName = memberExpr.object.name;
-            indexVarName = memberExpr.property.name;
-            returnVarName = null; // Direct return, no intermediate variable
-          }
-        } else if (t.isIdentifier(returnStmt.argument)) {
-          // Return variable: return _0x5afda5
-          // Find where this variable is assigned from array
-          returnVarName = returnStmt.argument.name;
-          const assignment = findVariableAssignmentFromArray(body, returnVarName, arrayCall.variableName);
-          if (assignment) {
-            arrayVarName = assignment.arrayVar;
-            indexVarName = assignment.indexVar;
-          }
-        }
-      }
-
-      if (!arrayVarName || !indexVarName) {
-        return;
-      }
-
-      // Verify the array variable matches
-      if (arrayVarName !== arrayCall.variableName) {
-        return;
-      }
+      // Find all function calls in the body (dependencies)
+      const dependencies = findFunctionCallsInBody(body);
 
       decoders.push({
         name: node.id.name,
-        arrayName: arrayCall.arrayFunctionName,
-        offset: offsetMatch.offset,
-        aliases: new Set(),
+        dependencies: [...dependencies], // All functions this decoder calls
+        functionCode: "",
       });
-    }
-  };
-
-  traverse(ast, visitor);
+    },
+  });
 
   return decoders;
 }
 
-function findVariableAssignmentFromArray(
-  body: t.Statement[],
-  varName: string,
-  expectedArrayVar: string
-): { arrayVar: string; indexVar: string } | null {
+function findFunctionCallsInBody(body: t.Statement[]): Set<string> {
+  const calls = new Set<string>();
+
   for (const stmt of body) {
-    if (!t.isVariableDeclaration(stmt)) continue;
-    
-    for (const decl of stmt.declarations) {
-      if (!t.isIdentifier(decl.id) || decl.id.name !== varName) continue;
-      if (!decl.init) continue;
-      
-      // Check if initialized from: _0x259908[_0x4cc654]
-      if (t.isMemberExpression(decl.init)) {
-        if (t.isIdentifier(decl.init.object) && t.isIdentifier(decl.init.property)) {
-          if (decl.init.object.name === expectedArrayVar) {
-            return {
-              arrayVar: decl.init.object.name,
-              indexVar: decl.init.property.name
-            };
-          }
-        }
-      }
+    traverseFunctionCalls(stmt, calls);
+  }
+
+  return calls;
+}
+
+function traverseFunctionCalls(node: any, calls: Set<string>): void {
+  if (!node || typeof node !== 'object') return;
+
+  if (node.type === 'CallExpression' && t.isIdentifier(node.callee)) {
+    calls.add(node.callee.name);
+  }
+
+  // Recursively check all properties
+  for (const key in node) {
+    if (key === 'type' || key === 'loc' || key === 'start' || key === 'end') continue;
+    const value = node[key];
+    if (Array.isArray(value)) {
+      value.forEach(item => traverseFunctionCalls(item, calls));
+    } else {
+      traverseFunctionCalls(value, calls);
     }
   }
+}
+
+function extractCompleteCode(ast: t.File, decoders: DecoderInfo[]): void {
+  // Collect ALL function names we need (decoders + ALL their dependencies)
+  const allFunctionNames = new Set<string>();
+  for (const decoder of decoders) {
+    allFunctionNames.add(decoder.name);
+    for (const dep of decoder.dependencies) {
+      allFunctionNames.add(dep);
+    }
+  }
+
+  // Extract code for ALL functions, not just decoders
+  const functionCodes = new Map<string, string>();
+
+  traverse(ast, {
+    FunctionDeclaration(path: any) {
+      const { node } = path;
+      if (!node.id) return;
+
+      const funcName = node.id.name;
+      
+      // Only extract functions we need (decoders and their dependencies)
+      if (!allFunctionNames.has(funcName)) return;
+
+      // Extract complete function including all statements
+      const funcAst = t.file(t.program([node as t.Statement]));
+      const code = generate(funcAst).code;
+      functionCodes.set(funcName, code);
+      
+      console.log(`[Debug] Extracted code for ${funcName} (${code.length} chars)`);
+    },
+  });
+
+  // Assign codes to decoders
+  for (const decoder of decoders) {
+    const code = functionCodes.get(decoder.name);
+    if (code) {
+      decoder.functionCode = code;
+    }
+  }
+  
+  // Store all dependency codes too - we'll use them in createDecoderVM
+  (decoders as any).allFunctionCodes = functionCodes;
+}
+
+function createDecoderVM(code: string, decoders: DecoderInfo[]): any {
+  try {
+    const context = createContext({
+      console: { log: () => {}, error: () => {}, warn: () => {} },
+    });
+
+    // Execute the FULL code in VM first (including anti-tamper rotation)
+    // This is critical - the anti-tamper code at the top rotates the array
+    try {
+      runInContext(code, context);
+      console.log(`[Debug] Full code executed in VM (including anti-tamper)`);
+    } catch (err) {
+      console.warn(`[Debug] Error executing full code:`, err);
+      // Continue anyway - the functions might still be defined
+    }
+
+    // Verify decoder is available
+    const decoder = decoders[0];
+    if (decoder) {
+      try {
+        const testResult = runInContext(`typeof ${decoder.name}`, context);
+        console.log(`[Debug] Decoder ${decoder.name} type: ${testResult}`);
+      } catch (e) {
+        console.warn(`[Debug] Decoder ${decoder.name} not available`);
+      }
+    }
+
+    return context;
+  } catch (err) {
+    console.error("Failed to create VM context:", err);
+    return null;
+  }
+}
+
+function getDecoderName(node: t.CallExpression, decoders: DecoderInfo[]): string | null {
+  if (!t.isIdentifier(node.callee)) return null;
+
+  const callName = node.callee.name;
+
+  for (const decoder of decoders) {
+    if (decoder.name === callName) {
+      return decoder.name;
+    }
+    // Also check if this is a call to a dependency (which might also be a decoder)
+    if (decoder.dependencies.includes(callName)) {
+      return callName;
+    }
+  }
+
   return null;
 }
 
@@ -228,7 +303,6 @@ function findOffsetSubtraction(body: t.Statement[]): { offset: number } | null {
     if (!t.isExpressionStatement(stmt)) continue;
     const { expression } = stmt;
 
-    // Pattern: _0x4cc654 = _0x4cc654 - 0x12f
     if (!t.isAssignmentExpression(expression)) continue;
     if (expression.operator !== "=") continue;
     if (!t.isBinaryExpression(expression.right)) continue;
@@ -238,11 +312,8 @@ function findOffsetSubtraction(body: t.Statement[]): { offset: number } | null {
     const rightLeft = expression.right.left;
     const rightRight = expression.right.right;
 
-    // Check that both sides use the same identifier
     if (!t.isIdentifier(left) || !t.isIdentifier(rightLeft)) continue;
     if (left.name !== rightLeft.name) continue;
-
-    // Check that the right side is a numeric literal
     if (!t.isNumericLiteral(rightRight)) continue;
 
     return { offset: rightRight.value };
@@ -259,7 +330,6 @@ function findArrayFunctionCall(body: t.Statement[]): { variableName: string; arr
       if (!t.isIdentifier(decl.id)) continue;
       if (!decl.init) continue;
 
-      // Pattern: const _0x259908 = a0_0x2599()
       if (!t.isCallExpression(decl.init)) continue;
       if (!t.isIdentifier(decl.init.callee)) continue;
       if (decl.init.arguments.length !== 0) continue;
@@ -272,86 +342,4 @@ function findArrayFunctionCall(body: t.Statement[]): { variableName: string; arr
   }
 
   return null;
-}
-
-function findAliases(ast: t.File, decoders: DecoderInfo[]): void {
-  const decoderNames = new Set(decoders.map((d) => d.name));
-
-  traverse(ast, {
-    VariableDeclarator(path: any) {
-      const { node } = path;
-      if (!t.isIdentifier(node.id)) return;
-      if (!node.init) return;
-
-      // Pattern: const a0_0x2f1e8a = a0_0x5afd
-      if (!t.isIdentifier(node.init)) return;
-
-      const targetName = node.init.name;
-      const aliasName = node.id.name;
-
-      // Check if this is an alias for any decoder
-      for (const decoder of decoders) {
-        if (decoderNames.has(targetName)) {
-          decoder.aliases.add(aliasName);
-          decoderNames.add(aliasName);
-        }
-      }
-    },
-  });
-}
-
-function getDecoderForCall(node: t.CallExpression, decoders: DecoderInfo[]): DecoderInfo | null {
-  if (!t.isIdentifier(node.callee)) return null;
-
-  const callName = node.callee.name;
-
-  for (const decoder of decoders) {
-    if (decoder.name === callName || decoder.aliases.has(callName)) {
-      return decoder;
-    }
-  }
-
-  return null;
-}
-
-function extractStringArray(ast: t.File, arrayFunctionName: string): string[] | null {
-  let strings: string[] | null = null;
-
-  traverse(ast, {
-    FunctionDeclaration(path: any) {
-      const { node } = path;
-      if (!node.id || node.id.name !== arrayFunctionName) return;
-
-      // Look for: const _0x557293 = ['renderedBuffer', 'fillText', ...]
-      const body = node.body.body;
-
-      for (const stmt of body) {
-        if (!t.isVariableDeclaration(stmt)) continue;
-
-        for (const decl of stmt.declarations) {
-          if (!t.isIdentifier(decl.id)) continue;
-          if (!decl.init) continue;
-
-          // Pattern: const _0x557293 = ['a', 'b', 'c']
-          if (t.isArrayExpression(decl.init)) {
-            const elements = decl.init.elements;
-            strings = [];
-
-            for (const elem of elements) {
-              if (t.isStringLiteral(elem)) {
-                strings.push(elem.value);
-              } else {
-                // Skip non-string elements (like other decoder calls)
-                strings.push("");
-              }
-            }
-
-            return;
-          }
-        }
-      }
-    },
-  });
-
-  return strings;
 }
