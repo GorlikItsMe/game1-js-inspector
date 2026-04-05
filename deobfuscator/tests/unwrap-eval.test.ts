@@ -16,7 +16,7 @@ describe('unwrapEval', () => {
     const result = unwrapEval(input);
 
     expect(result.success).toBe(true);
-    expect(result.code).toBe(`try{const str = \\'test\\'; console.log(str)}catch(e){}`);
+    expect(result.code).toBe(`try{const str = 'test'; console.log(str)}catch(e){}`);
   });
 
   it('should return error when no eval found', () => {

@@ -9,106 +9,50 @@ export interface UnwrapEvalResult {
   };
 }
 
-function findMatchingQuote(code: string, startQuotePos: number): number {
-  const quote = code[startQuotePos];
-  let i = startQuotePos + 1;
-  let escaped = false;
-
-  while (i < code.length) {
-    const char = code[i];
-
-    if (escaped) {
-      escaped = false;
+function findMatchingQuote(code: string, start: number): number {
+  const quote = code[start];
+  for (let i = start + 1; i < code.length; i++) {
+    if (code[i] === '\\' && i + 1 < code.length) {
       i++;
       continue;
     }
-
-    if (char === '\\') {
-      escaped = true;
-      i++;
-      continue;
-    }
-
-    if (char === quote) {
-      return i;
-    }
-
-    i++;
+    if (code[i] === quote) return i;
   }
-
   return -1;
 }
 
 export function unwrapEval(code: string): UnwrapEvalResult {
   const originalSize = code.length;
-
-  const evalCallStart = code.indexOf('eval(');
-  if (evalCallStart === -1) {
-    return {
-      code: code,
-      success: true,
-      stats: {
-        originalSize,
-        unwrappedSize: originalSize,
-        bytesRemoved: 0,
-      },
-    };
+  const evalStart = code.indexOf('eval(');
+  
+  if (evalStart === -1) {
+    return { code, success: true, stats: { originalSize, unwrappedSize: originalSize, bytesRemoved: 0 } };
   }
 
-  const openParenPos = evalCallStart + 4;
-  const afterParenPos = openParenPos + 1;
-
-  if (afterParenPos >= code.length) {
-    return {
-      code: code,
-      success: false,
-      error: 'Malformed eval call - no content after eval(',
-    };
+  const quotePos = evalStart + 5;
+  const quote = code[quotePos];
+  
+  if (quote !== '\'' && quote !== '"') {
+    return { code, success: false, error: 'Expected string literal inside eval()' };
   }
 
-  const quoteChar = code[afterParenPos];
-  if (quoteChar !== '\'' && quoteChar !== '"') {
-    return {
-      code: code,
-      success: false,
-      error: 'Expected string literal inside eval()',
-    };
+  const endQuotePos = findMatchingQuote(code, quotePos);
+  if (endQuotePos === -1) {
+    return { code, success: false, error: 'Could not find closing quote for eval string' };
   }
 
-  const closingQuotePos = findMatchingQuote(code, afterParenPos);
-  if (closingQuotePos === -1) {
-    return {
-      code: code,
-      success: false,
-      error: 'Could not find closing quote for eval string',
-    };
+  if (code[endQuotePos + 1] !== ')') {
+    return { code, success: false, error: 'Could not find closing ) for eval' };
   }
 
-  const closingParenPos = closingQuotePos + 1;
-  if (code[closingParenPos] !== ')') {
-    return {
-      code: code,
-      success: false,
-      error: 'Could not find closing ) for eval',
-    };
-  }
+  const contentWithQuotes = code.substring(quotePos, endQuotePos + 1);
 
-  const evalContent = code.substring(afterParenPos + 1, closingQuotePos);
-
-  const beforeEval = code.substring(0, evalCallStart);
-  const afterEval = code.substring(closingParenPos + 1);
-  const unwrappedCode = beforeEval + evalContent + afterEval;
-
+  const unwrappedCode = code.substring(0, evalStart) + eval(contentWithQuotes) + code.substring(endQuotePos + 2);
   const unwrappedSize = unwrappedCode.length;
-  const bytesRemoved = originalSize - unwrappedSize;
 
   return {
     code: unwrappedCode,
     success: true,
-    stats: {
-      originalSize,
-      unwrappedSize,
-      bytesRemoved,
-    },
+    stats: { originalSize, unwrappedSize, bytesRemoved: originalSize - unwrappedSize }
   };
 }
