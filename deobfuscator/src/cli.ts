@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { unwrapEval } from './steps/unwrap-eval.js';
 import { deobfuscateObfuscatorIo } from './steps/obfuscator-io.js';
 import { evaluateParseInt } from './steps/evaluate-parseint.js';
+import { evaluateConstantMath } from './steps/evaluate-constant-math.js';
 import { runAllSteps } from './pipeline.js';
 
 export const program = new Command();
@@ -94,6 +95,23 @@ program
       (stats) => {
         console.log(`  Total parseInt calls:    ${stats.totalCalls}`);
         console.log(`  Evaluated calls:         ${stats.evaluatedCalls}`);
+      }
+    );
+  });
+
+program
+  .command('evaluate-constant-math')
+  .description('Evaluate constant arithmetic expressions')
+  .argument('<input>', 'Input file path')
+  .argument('[output]', 'Output file path (default: <input>.evaluated-math.js)')
+  .action((input: string, output?: string) => {
+    runSingleCommand(
+      input,
+      output,
+      '.evaluated-math.js',
+      evaluateConstantMath,
+      (stats) => {
+        console.log(`  Constant expressions evaluated: ${stats.expressionsEvaluated}`);
       }
     );
   });
