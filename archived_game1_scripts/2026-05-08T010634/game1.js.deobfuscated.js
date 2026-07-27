@@ -1107,7 +1107,7 @@ try {
       let _0x49e0a3 = 0;
       _0xcc4a65.oncomplete = _0x4d3b2d => _0x42cb33(_0x4d3b2d.renderedBuffer);
       const _0x2e1627 = () => {
-        setTimeout(() => _0x1a6581(a0_0x50f4de('timeout')), Math.min(500, _0x49e0a3 + 5000 - Date.now()));
+        setTimeout(() => _0x1a6581(createError('timeout')), Math.min(500, _0x49e0a3 + 5000 - Date.now()));
       };
       const _0x540e4e = () => {
         try {
@@ -1124,7 +1124,7 @@ try {
                 _0x21017f++;
               }
               if (_0x5e07dc && _0x21017f >= 3) {
-                _0x1a6581(a0_0x50f4de("suspended"));
+                _0x1a6581(createError("suspended"));
               } else {
                 setTimeout(_0x540e4e, 500);
               }
@@ -1153,7 +1153,7 @@ try {
     }
     return _0x3fa3cc;
   }
-  function a0_0x50f4de(_0x4863d5) {
+  function createError(_0x4863d5) {
     const _0x118cfc = new Error(_0x4863d5);
     _0x118cfc.name = _0x4863d5;
     return _0x118cfc;
@@ -1441,12 +1441,12 @@ try {
       const _0x5b5846 = new Uint8Array(131072);
       _0x25a3f4.readPixels(0, 0, 256, 128, _0x25a3f4.RGBA, _0x25a3f4.UNSIGNED_BYTE, _0x5b5846);
       let _0x1f167e = JSON.stringify(_0x5b5846).replace(/,?"[0-9]+":/g, '');
-      return a0_0x5e8901(_0x1f167e);
+      return hashSHA256(_0x1f167e);
     } catch (_0x25cf45) {
       return '-1';
     }
   };
-  const a0_0x5e8901 = function () {
+  const hashSHA256 = function () {
     let _0x50d049 = 1;
     let _0x108c58;
     let _0x115654 = [];
@@ -1768,43 +1768,43 @@ try {
   const generateRandomString = _0x32c0ac => {
     return new Array(_0x32c0ac).fill(0).map(() => Math.random().toString(36).substr(2, 9)).reduce((_0x211572, _0x509fa7) => _0x211572 + _0x509fa7, '');
   };
-  const a0_0x43d52a = async () => {
+  const collectFingerprint = async () => {
     const _0x461136 = await Promise.all([checkPermissions(), enumerateMediaDevices(), getAudioFingerprint()]);
-    const _0x4a2b82 = detectBrowser();
-    const _0x116bfe = detectOS();
-    const _0x5c488f = getWebglInfo();
-    const _0x1041d9 = a0_0x5e8901(JSON.stringify(detectFonts()));
+    const detectedBrowser = detectBrowser();
+    const detectedOS = detectOS();
+    const detectedWebglInfo = getWebglInfo();
+    const _0x1041d9 = hashSHA256(JSON.stringify(detectFonts()));
     const _0x5f2556 = getWebglCanvasFingerprint();
     const _0x528227 = getCanvas2dFingerprint();
     return {
       'dg': 12,
       'dO4': Intl.DateTimeFormat().resolvedOptions().timeZone,
-      'b-I2rx-E': _0x116bfe.name,
-      'YdFB': _0x4a2b82.name,
+      'b-I2rx-E': detectedOS.name,
+      'YdFB': detectedBrowser.name,
       'dttJrRyO': navigator.vendor,
       'bdI_': navigator.deviceMemory || 0,
       'Y9JA': navigator.hardwareConcurrency || 0,
       'bM07og': navigator.languages.join(','),
-      'cNxRuCGPAg': a0_0x5e8901(JSON.stringify(getBrowserPlugins())),
-      'Z9dM': _0x5c488f.vendor + ',' + _0x5c488f.renderer,
+      'cNxRuCGPAg': hashSHA256(JSON.stringify(getBrowserPlugins())),
+      'Z9dM': detectedWebglInfo.vendor + ',' + detectedWebglInfo.renderer,
       'ZtVDtyo': _0x1041d9,
-      'YdY6oxJV': a0_0x5e8901(JSON.stringify(getAudioContextProps())),
-      'b-I4nQ-C61rI': _0x116bfe.version,
+      'YdY6oxJV': hashSHA256(JSON.stringify(getAudioContextProps())),
+      'b-I4nQ-C61rI': detectedOS.version,
       'd-BEuCA': window.screen.availWidth,
       'aM02nQV5': window.screen.availHeight,
       'bL8zohR5': Boolean(localStorage),
       'c8Y6qRuA': Boolean(sessionStorage),
-      'dt9DqBc': a0_0x5e8901(JSON.stringify(detectVideoCodecs())),
-      'YdY6oxI': a0_0x5e8901(JSON.stringify(detectAudioCodecs())),
-      'bdI2nwA': a0_0x5e8901(JSON.stringify(_0x461136[1])),
-      'cNVHtB2QA2zbSbw': a0_0x5e8901(JSON.stringify(_0x461136[0])),
+      'dt9DqBc': hashSHA256(JSON.stringify(detectVideoCodecs())),
+      'YdY6oxI': hashSHA256(JSON.stringify(detectAudioCodecs())),
+      'bdI2nwA': hashSHA256(JSON.stringify(_0x461136[1])),
+      'cNVHtB2QA2zbSbw': hashSHA256(JSON.stringify(_0x461136[0])),
       'YdY6oxJYqA': _0x461136[2],
       'd9w-pRFXpw': _0x5f2556,
       'Y8QyqAl8whI': _0x528227,
       'YtFF': detectAutomation()
     };
   };
-  function a0_0x131611(_0x8e3d2) {
+  function orderFingerprintKeys(_0x8e3d2) {
     let _0x446978 = [];
     FINGERPRINT_KEY_ORDER.forEach(_0x245f1c => {
       _0x446978.push(_0x8e3d2[_0x245f1c]);
@@ -1837,37 +1837,37 @@ try {
     return _0x41c20f(_0x47445f);
   }
   var game1 = async function (_0x39a95a, _0x406fd0 = null) {
-    let _0x123bd9 = new Date().getTime();
-    let _0x49c17b = localStorage.getItem("x-game");
+    let timeNowUnixMs = new Date().getTime();
+    let xGame = localStorage.getItem("x-game");
     let _0x2bf389;
     let _0x5b3a00;
     try {
-      let _0x1dc1ad = localStorage.getItem("x-vec");
-      let _0x21a80f = _0x1dc1ad.lastIndexOf(" ");
-      _0x2bf389 = _0x1dc1ad.substr(0, _0x21a80f).split('');
-      _0x5b3a00 = parseInt(_0x1dc1ad.substr(_0x21a80f + 1));
+      let xVec = localStorage.getItem("x-vec");
+      let _0x21a80f = xVec.lastIndexOf(" ");
+      _0x2bf389 = xVec.substr(0, _0x21a80f).split('');
+      _0x5b3a00 = parseInt(xVec.substr(_0x21a80f + 1));
     } catch (_0x3e2794) {
       _0x2bf389 = Array.from(Array(100), _0x111355 => String.fromCharCode(32 + Math.random() * 94 | 0));
-      _0x5b3a00 = _0x123bd9;
+      _0x5b3a00 = timeNowUnixMs;
     }
     let _0x1181df = _0x2bf389.join('') + " " + _0x5b3a00;
     localStorage.setItem('x-vec', _0x1181df);
-    if (_0x5b3a00 + 1000 < _0x123bd9) {
+    if (_0x5b3a00 + 1000 < timeNowUnixMs) {
       _0x2bf389.shift();
       _0x2bf389.push(String.fromCharCode(32 + Math.random() * 94 | 0));
-      _0x1181df = _0x2bf389.join('') + " " + _0x123bd9;
+      _0x1181df = _0x2bf389.join('') + " " + timeNowUnixMs;
       localStorage.setItem("x-vec", _0x1181df);
     }
-    if (!_0x49c17b) {
-      _0x49c17b = generateRandomString(3);
-      localStorage.setItem("x-game", _0x49c17b);
+    if (!xGame) {
+      xGame = generateRandomString(3);
+      localStorage.setItem("x-game", xGame);
     }
-    let _0x122ec0 = await a0_0x43d52a();
+    let _0x122ec0 = await collectFingerprint();
     _0x122ec0.Y9U6mw9451U = new Date().toISOString();
-    _0x122ec0.depTtw = _0x49c17b;
+    _0x122ec0.depTtw = xGame;
     _0x122ec0["dts-siGT"] = window.btoa(_0x1181df);
-    _0x122ec0.ZA = new Date().getTime() - _0x123bd9;
-    async function _0x39dfb5() {
+    _0x122ec0.ZA = new Date().getTime() - timeNowUnixMs;
+    async function getServerTime() {
       return new Promise((_0x2fcb19, _0x53b404) => {
         const _0x2c97b7 = new XMLHttpRequest();
         _0x2c97b7.onreadystatechange = function () {
@@ -1885,10 +1885,10 @@ try {
         _0x2c97b7.send();
       });
     }
-    _0x122ec0.c9hKwCWX61TBJm_dKn0 = await _0x39dfb5();
+    _0x122ec0.c9hKwCWX61TBJm_dKn0 = await getServerTime();
     _0x122ec0.dehNvwBnzDqu = navigator.userAgent;
     _0x122ec0.ctdIvSKVCQ = _0x406fd0;
-    _0x122ec0 = a0_0x131611(_0x122ec0);
+    _0x122ec0 = orderFingerprintKeys(_0x122ec0);
     let _0x4593e5 = encodeFingerprintHash(JSON.stringify(_0x122ec0));
     _0x39a95a(_0x4593e5);
   };

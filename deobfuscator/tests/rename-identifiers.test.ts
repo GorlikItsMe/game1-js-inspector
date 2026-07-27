@@ -29,6 +29,41 @@ describe('renameIdentifiers', () => {
     expect(result.error).toContain('already exists');
   });
 
+  it.each([
+    { kind: 'const', input: `const existing = 42; const _0x1234 = () => existing + 1;`, keyword: '+ 1', name: 'existing' },
+    { kind: 'let', input: `let counter = 0; function _0xinc() { counter++; }`, keyword: 'counter++', name: 'counter' },
+    { kind: 'var', input: `var temp = "hello"; const _0x1234 = () => temp + " world";`, keyword: '" world"', name: 'temp' },
+  ])('should error when target name collides with a $kind declaration', ({ input, keyword, name }) => {
+    const result = renameIdentifiers(input, [
+      { name, keywords: [keyword] },
+    ]);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('already exists');
+  });
+
+  it('should error when target name collides with a function parameter', () => {
+    const input = `function calc(total) { const _0x1234 = total * 2; return _0x1234; }`;
+    const result = renameIdentifiers(input, [
+      { name: 'total', keywords: ['total * 2'] },
+    ]);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('already exists');
+  });
+
+  it('should error when target name exists in the function body scope', () => {
+    const input = `
+function _0xouter() {
+  const inner = 1;
+  return inner + 2;
+}
+    `.trim();
+    const result = renameIdentifiers(input, [
+      { name: 'inner', keywords: ['inner + 2'] },
+    ]);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('already exists');
+  });
+
   it('should rename function by matching keywords in body', () => {
     const input = `function a0_0x1234() { return new XMLHttpRequest(); }`;
     const result = renameIdentifiers(input, [
