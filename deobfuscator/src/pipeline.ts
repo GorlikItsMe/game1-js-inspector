@@ -5,6 +5,8 @@ import { convertHexLiterals } from "./steps/convert-hex-literals.js";
 import { inlineStringDecoder } from "./steps/inline-string-decoder.js";
 import { evaluateConstantMath } from "./steps/evaluate-constant-math.js";
 import { simplifyPropertyAccess } from "./steps/simplify-property-access.js";
+import { renameIdentifiers } from "./steps/rename-identifiers.js";
+import { defaultRenameRules } from "./rename-rules.js";
 
 export function runStep<T extends object>(
     stepName: string,
@@ -57,6 +59,10 @@ export function runAllSteps(code: string): string {
 
     code = runStep('Step 7: Simplify Property Access', simplifyPropertyAccess, code, (stats) => {
         console.log(`  Converted ${stats.convertedToDot}/${stats.totalBracketAccesses} bracket accesses to dot notation`);
+    });
+
+    code = runStep('Step 8: Rename Identifiers', (c) => renameIdentifiers(c, defaultRenameRules), code, (stats) => {
+        console.log(`  Renamed ${stats.renamesApplied} identifiers`);
     });
 
     return code;
