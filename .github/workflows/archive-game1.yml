@@ -81,7 +81,19 @@ jobs:
           
           echo "Created archive folder: $ARCHIVE_DIR/$FOLDER_NAME"
           echo "folder_name=$FOLDER_NAME" >> $GITHUB_ENV
-      
+
+      - name: Generate deobfuscated version
+        if: steps.check_dup.outputs.is_duplicate == 'false'
+        run: |
+          FOLDER_NAME="${{ env.folder_name }}"
+
+          npm install
+          npm run build
+          node dist/index.js deobfuscate "../archived_game1_scripts/$FOLDER_NAME/game1.js"
+
+          echo "Deobfuscated version created for $FOLDER_NAME"
+        working-directory: deobfuscator
+
       - name: Commit and push new archive
         if: steps.check_dup.outputs.is_duplicate == 'false'
         run: |
