@@ -1,7 +1,9 @@
 import { unwrapEval } from "./steps/unwrap-eval.js";
 import { deobfuscateObfuscatorIo } from "./steps/obfuscator-io.js";
+import { evaluateParseInt } from "./steps/evaluate-parseint.js";
 import { convertHexLiterals } from "./steps/convert-hex-literals.js";
 import { inlineStringDecoder } from "./steps/inline-string-decoder.js";
+import { evaluateConstantMath } from "./steps/evaluate-constant-math.js";
 import { simplifyPropertyAccess } from "./steps/simplify-property-access.js";
 
 export function runStep<T extends object>(
@@ -45,7 +47,15 @@ export function runAllSteps(code: string): string {
         console.log(`  Inlined ${stats.inlinedCalls}/${stats.totalCalls} decoder calls (${stats.skippedVariableCalls} skipped - variable args)`);
     });
 
-    code = runStep('Step 5: Simplify Property Access', simplifyPropertyAccess, code, (stats) => {
+    code = runStep('Step 5: Evaluate parseInt', evaluateParseInt, code, (stats) => {
+        console.log(`  Evaluated ${stats.evaluatedCalls}/${stats.totalCalls} parseInt calls`);
+    });
+
+    code = runStep('Step 6: Evaluate Constant Math', evaluateConstantMath, code, (stats) => {
+        console.log(`  Evaluated ${stats.expressionsEvaluated} constant math expressions`);
+    });
+
+    code = runStep('Step 7: Simplify Property Access', simplifyPropertyAccess, code, (stats) => {
         console.log(`  Converted ${stats.convertedToDot}/${stats.totalBracketAccesses} bracket accesses to dot notation`);
     });
 
