@@ -1873,7 +1873,7 @@ try {
     _0x1cbec3.depTtw = _0x4a04ff;
     _0x1cbec3["dts-siGT"] = window.btoa(_0x1c53a4);
     _0x1cbec3.ZA = new Date().getTime() - _0x4e8adb;
-    async function GAME1_URL() {
+    async function _0x102006() {
       return new Promise((_0x1295ad, _0x4e4f07) => {
         const _0x384876 = new XMLHttpRequest();
         _0x384876.onreadystatechange = function () {
@@ -1891,7 +1891,7 @@ try {
         _0x384876.send();
       });
     }
-    _0x1cbec3.c9hKwCWX61TBJm_dKn0 = await GAME1_URL();
+    _0x1cbec3.c9hKwCWX61TBJm_dKn0 = await _0x102006();
     _0x1cbec3.dehNvwBnzDqu = navigator.userAgent;
     _0x1cbec3.ctdIvSKVCQ = _0x3b7aae;
     _0x1cbec3 = a0_0x98f360(_0x1cbec3);

@@ -21,7 +21,7 @@ try {
     return _0x253e99;
   }
   const FINGERPRINT_KEY_ORDER = ['dg', "dO4", "b-I2rx-E", "YdFB", "dttJrRyO", 'bdI_', 'Y9JA', "bM07og", "cNxRuCGPAg", "Z9dM", 'ZtVDtyo', "YdY6oxJV", 'd-BEuCA', "aM02nQV5", "dt9DqBc", "YdY6oxI", 'bdI2nwA', 'cNVHtB2QA2zbSbw', "YdY6oxJYqA", "d9w-pRFXpw", "Y8QyqAl8whI", "Y9U6mw9451U", "depTtw", 'ZA', "b-I4nQ-C61rI", "dts-siGT", "dehNvwBnzDqu", 'c9hKwCWX61TBJm_dKn0', "ctdIvSKVCQ", "YtFF"];
-  const GAME1_URL = "https://gameforge.com/tra/game1.js";
+  const a0_0x5632f0 = "https://gameforge.com/tra/game1.js";
   const a0_0x5e55a4 = Object.keys({
     ".Aqua Kana": false,
     ".Helvetica LT MM": false,
@@ -1875,7 +1875,7 @@ try {
     _0x290cfd.depTtw = _0x548ae9;
     _0x290cfd['dts-siGT'] = window.btoa(_0x49d940);
     _0x290cfd.ZA = new Date().getTime() - _0x321107;
-    async function fetchServerTime() {
+    async function _0x24cb06() {
       return new Promise((_0x4d21e4, _0x45b997) => {
         const _0x4d1acb = new XMLHttpRequest();
         _0x4d1acb.onreadystatechange = function () {
@@ -1889,11 +1889,11 @@ try {
             }
           }
         };
-        _0x4d1acb.open("GET", GAME1_URL, true);
+        _0x4d1acb.open("GET", a0_0x5632f0, true);
         _0x4d1acb.send();
       });
     }
-    _0x290cfd.c9hKwCWX61TBJm_dKn0 = await fetchServerTime();
+    _0x290cfd.c9hKwCWX61TBJm_dKn0 = await _0x24cb06();
     _0x290cfd.dehNvwBnzDqu = navigator.userAgent;
     _0x290cfd.ctdIvSKVCQ = _0x2ab8a1;
     _0x290cfd = a0_0x1ef051(_0x290cfd);
