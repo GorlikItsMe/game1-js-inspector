@@ -1,7 +1,7 @@
 import type { RenameRule } from "./steps/rename-identifiers.js";
 
 export const defaultRenameRules: RenameRule[] = [
-  { name: 'fetchServerTime', keywords: ['XMLHttpRequest', 'getResponseHeader'], canBeOverwritten: true },
+  { name: 'fetchServerTime', keywords: ['XMLHttpRequest', 'getResponseHeader'], allowOverwrite: true },
   { name: 'getAudioFingerprint', keywords: ['OfflineAudioContext', 'createDynamicsCompressor'] },
   { name: 'renderAudioPromise', keywords: ['startRendering', 'oncomplete'] },
   // { name: 'sumAudioChannelData', keywords: ['Math.abs'] }, // too generic — Math.abs appears in many functions

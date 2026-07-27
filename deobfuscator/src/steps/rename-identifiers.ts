@@ -10,7 +10,7 @@ export interface RenameRule {
   name: string;
   keywords: string[];
   optional?: boolean;
-  canBeOverwritten?: boolean;
+  allowOverwrite?: boolean;
 }
 
 export interface RenameIdentifiersResult {
@@ -53,6 +53,22 @@ function isStringArrayFunctionBody(bodyNode: any): boolean {
   return decl.init.elements.length > 50;
 }
 
+function tryCheckCandidate(
+  rule: RenameRule,
+  candidates: Array<{ oldName: string; scope: any; path: any }>,
+  name: string,
+  generateSource: () => string,
+  scope: any,
+  path: any
+): void {
+  try {
+    const source = generateSource();
+    if (rule.keywords.every((kw: string) => source.includes(kw))) {
+      candidates.push({ oldName: name, scope, path });
+    }
+  } catch { /* skip */ }
+}
+
 export function renameIdentifiers(
   code: string,
   rules?: RenameRule[]
@@ -81,12 +97,7 @@ export function renameIdentifiers(
           const name = path.node.id?.name;
           if (!name) return;
           if (isStringArrayFunctionBody(path.node.body)) return;
-          try {
-            const bodyCode = generate(path.node.body).code;
-            if (rule.keywords.every((kw: string) => bodyCode.includes(kw))) {
-              candidates.push({ oldName: name, scope: path.scope, path });
-            }
-          } catch { /* skip */ }
+          tryCheckCandidate(rule, candidates, name, () => generate(path.node.body).code, path.scope, path);
         },
         VariableDeclarator(path: any) {
           const name = (path.node.id as any)?.name;
@@ -94,20 +105,10 @@ export function renameIdentifiers(
           if (t.isFunctionExpression(path.node.init) || t.isArrowFunctionExpression(path.node.init)) {
             const body = path.node.init.body;
             if (isStringArrayFunctionBody(body)) return;
-            try {
-              const bodyCode = generate(body).code;
-              if (rule.keywords.every((kw: string) => bodyCode.includes(kw))) {
-                candidates.push({ oldName: name, scope: path.scope, path });
-              }
-            } catch { /* skip */ }
+            tryCheckCandidate(rule, candidates, name, () => generate(body).code, path.scope, path);
           } else {
             if (isLargeArray(path.node.init)) return;
-            try {
-              const declCode = generate(path.node).code;
-              if (rule.keywords.every((kw: string) => declCode.includes(kw))) {
-                candidates.push({ oldName: name, scope: path.scope, path });
-              }
-            } catch { /* skip */ }
+            tryCheckCandidate(rule, candidates, name, () => generate(path.node).code, path.scope, path);
           }
         },
       });
@@ -168,7 +169,7 @@ export function renameIdentifiers(
         }
         usedTargetNames.delete(oldName);
         scope.rename(oldName, rule.name);
-        usedTargetNames.set(rule.name, rule.canBeOverwritten === true);
+        usedTargetNames.set(rule.name, rule.allowOverwrite === true);
         totalRenames++;
       }
     }

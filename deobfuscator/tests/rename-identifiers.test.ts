@@ -283,7 +283,7 @@ function _0xfetch() {
     expect(result.error).toContain('already renamed');
   });
 
-  it('should allow overwrite when previous rule has canBeOverwritten', () => {
+  it('should allow overwrite when previous rule has allowOverwrite', () => {
     const input = `
 function _0xfetch() {
   const xhr = new XMLHttpRequest();
@@ -292,7 +292,7 @@ function _0xfetch() {
 }
     `.trim();
     const result = renameIdentifiers(input, [
-      { name: 'fetchServerTime', keywords: ['XMLHttpRequest', 'getResponseHeader'], canBeOverwritten: true },
+      { name: 'fetchServerTime', keywords: ['XMLHttpRequest', 'getResponseHeader'], allowOverwrite: true },
       { name: 'GAME1_URL', keywords: ['gameforge.com', 'game1.js'] },
     ]);
 
