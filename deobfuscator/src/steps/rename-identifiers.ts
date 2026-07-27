@@ -1,10 +1,14 @@
 import { parse } from "@babel/parser";
 import _traverse from "@babel/traverse";
+import type { NodePath, Scope } from "@babel/traverse";
 import _generate from "@babel/generator";
+import type { GeneratorResult } from "@babel/generator";
 import * as t from "@babel/types";
 
-const traverse = (_traverse as any).default || _traverse;
-const generate = (_generate as any).default || _generate;
+const traverse: (parent: t.Node, opts?: any, scope?: any, state?: any, parentPath?: any) => void =
+  (_traverse as any).default || _traverse;
+const generate: (node: t.Node, opts?: any) => GeneratorResult =
+  (_generate as any).default || _generate;
 
 export interface RenameRule {
   name: string;
@@ -40,11 +44,11 @@ export function validateRules(rules: RenameRule[]): void {
   }
 }
 
-function isLargeArray(init: any): boolean {
+function isLargeArray(init: t.Expression | null | undefined): boolean {
   return t.isArrayExpression(init) && init.elements.length > 50;
 }
 
-function isStringArrayFunctionBody(bodyNode: any): boolean {
+function isStringArrayFunctionBody(bodyNode: t.Node): boolean {
   if (!t.isBlockStatement(bodyNode)) return false;
   const firstStmt = bodyNode.body[0];
   if (!t.isVariableDeclaration(firstStmt)) return false;
@@ -55,11 +59,11 @@ function isStringArrayFunctionBody(bodyNode: any): boolean {
 
 function checkCandidate(
   rule: RenameRule,
-  candidates: Array<{ oldName: string; scope: any; path: any }>,
+  candidates: Array<{ oldName: string; scope: Scope; path: NodePath }>,
   name: string,
   generateSource: () => string,
-  scope: any,
-  path: any
+  scope: Scope,
+  path: NodePath
 ): void {
   const source = generateSource();
   if (rule.keywords.every((kw: string) => source.includes(kw))) {
@@ -88,17 +92,17 @@ export function renameIdentifiers(
     const usedTargetNames = new Map<string, boolean>();
 
     for (const rule of activeRules) {
-      const candidates: Array<{ oldName: string; scope: any; path: any }> = [];
+      const candidates: Array<{ oldName: string; scope: Scope; path: NodePath }> = [];
 
       traverse(ast, {
-        FunctionDeclaration(path: any) {
+        FunctionDeclaration(path: NodePath<t.FunctionDeclaration>) {
           const name = path.node.id?.name;
           if (!name) return;
           if (isStringArrayFunctionBody(path.node.body)) return;
           checkCandidate(rule, candidates, name, () => generate(path.node.body).code, path.scope, path);
         },
-        VariableDeclarator(path: any) {
-          const name = (path.node.id as any)?.name;
+        VariableDeclarator(path: NodePath<t.VariableDeclarator>) {
+          const name = (path.node.id as t.Identifier)?.name;
           if (!name) return;
           if (t.isFunctionExpression(path.node.init) || t.isArrowFunctionExpression(path.node.init)) {
             const body = path.node.init.body;
