@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import { readFileSync, writeFileSync } from 'fs';
 import { unwrapEval } from './steps/unwrap-eval.js';
 import { deobfuscateObfuscatorIo } from './steps/obfuscator-io.js';
+import { evaluateParseInt } from './steps/evaluate-parseint.js';
 import { runAllSteps } from './pipeline.js';
 
 export const program = new Command();
@@ -75,6 +76,24 @@ program
         console.log(`  Original size:      ${stats.originalSize.toLocaleString()} bytes`);
         console.log(`  Deobfuscated size:  ${stats.deobfuscatedSize.toLocaleString()} bytes`);
         console.log(`  Bytes delta:        ${stats.bytesDelta.toLocaleString()} bytes`);
+      }
+    );
+  });
+
+program
+  .command('evaluate-parseint')
+  .description('Evaluate parseInt() calls with string literals')
+  .argument('<input>', 'Input file path')
+  .argument('[output]', 'Output file path (default: <input>.evaluated.js)')
+  .action((input: string, output?: string) => {
+    runSingleCommand(
+      input,
+      output,
+      '.evaluated.js',
+      evaluateParseInt,
+      (stats) => {
+        console.log(`  Total parseInt calls:    ${stats.totalCalls}`);
+        console.log(`  Evaluated calls:         ${stats.evaluatedCalls}`);
       }
     );
   });
