@@ -10,6 +10,7 @@ export interface RenameRule {
   name: string;
   keywords: string[];
   optional?: boolean;
+  canBeOverwritten?: boolean;
 }
 
 export interface RenameIdentifiersResult {
@@ -111,7 +112,7 @@ export function renameIdentifiers(
         },
       });
 
-      if (candidates.length === 0 && rule.optional === false) {
+      if (candidates.length === 0 && !rule.optional) {
         return {
           code,
           success: false,
@@ -150,14 +151,14 @@ export function renameIdentifiers(
       if (candidates.length === 1) {
         const { oldName, scope } = candidates[0];
         if (usedTargetNames.has(oldName)) {
-          if (rule.optional === false) {
-            return {
-              code,
-              success: false,
-              error: `Rule "${rule.name}" matched "${oldName}", which was already renamed by a previous rule.`,
-            };
+          if (rule.canBeOverwritten) {
+            continue;
           }
-          continue;
+          return {
+            code,
+            success: false,
+            error: `Rule "${rule.name}" matched "${oldName}", which was already renamed by a previous rule.`,
+          };
         }
         if (scope.getBinding(rule.name)) {
           return {

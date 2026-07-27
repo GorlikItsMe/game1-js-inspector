@@ -166,7 +166,7 @@ var game1 = async function() {
   it('should error when non-optional rule matches nothing', () => {
     const input = `const x = 1;`;
     const result = renameIdentifiers(input, [
-      { name: 'NON_EXISTENT', keywords: ['nonexistent'], optional: false },
+      { name: 'NON_EXISTENT', keywords: ['nonexistent'] },
     ]);
 
     expect(result.success).toBe(false);
@@ -276,11 +276,29 @@ function _0xfetch() {
     `.trim();
     const result = renameIdentifiers(input, [
       { name: 'fetchServerTime', keywords: ['XMLHttpRequest', 'getResponseHeader'] },
-      { name: 'GAME1_URL', keywords: ['gameforge.com', 'game1.js'], optional: false },
+      { name: 'GAME1_URL', keywords: ['gameforge.com', 'game1.js'] },
     ]);
 
     expect(result.success).toBe(false);
     expect(result.error).toContain('already renamed');
+  });
+
+  it('should skip override when canBeOverwritten is true', () => {
+    const input = `
+function _0xfetch() {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", "https://gameforge.com/tra/game1.js", true);
+  return xhr.getResponseHeader("date");
+}
+    `.trim();
+    const result = renameIdentifiers(input, [
+      { name: 'fetchServerTime', keywords: ['XMLHttpRequest', 'getResponseHeader'] },
+      { name: 'GAME1_URL', keywords: ['gameforge.com', 'game1.js'], canBeOverwritten: true },
+    ]);
+
+    expect(result.success).toBe(true);
+    expect(result.stats?.renamesApplied).toBe(1);
+    expect(result.code).toContain('function fetchServerTime');
   });
 
   it('should return unchanged code with empty rules', () => {

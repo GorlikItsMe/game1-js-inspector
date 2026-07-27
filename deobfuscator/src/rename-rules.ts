@@ -21,6 +21,6 @@ export const defaultRenameRules: RenameRule[] = [
   { name: 'generateRandomString', keywords: ['Math.random', 'toString(36)', 'substr'] },
   // { name: 'orderFingerprintKeys', keywords: ['forEach', 'delete'], optional: true }, // too generic — forEach and delete are everywhere
   { name: 'encodeFingerprintHash', keywords: ['encodeURIComponent', 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_='] },
-  { name: 'GAME1_URL', keywords: ['gameforge.com', 'game1.js'], optional: true },
+  { name: 'GAME1_URL', keywords: ['gameforge.com', 'game1.js'], optional: true, canBeOverwritten: true },
   { name: 'FINGERPRINT_KEY_ORDER', keywords: ['dg', 'dO4', 'b-I2rx-E', 'YdFB', 'YtFF'], optional: true },
 ];
