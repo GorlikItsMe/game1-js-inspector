@@ -13,22 +13,16 @@ export function evaluateParseInt(code: string): EvaluateParseIntResult {
 
   let match;
   let totalCalls = 0;
-  let evaluatedCalls = 0;
   const replacements: Array<{ start: number; end: number; replacement: string }> = [];
 
   while ((match = pattern.exec(code)) !== null) {
     totalCalls++;
     const stringContent = match[2];
-    const numericValue = parseInt(stringContent, 10);
-
-    if (!isNaN(numericValue)) {
-      replacements.push({
-        start: match.index,
-        end: match.index + match[0].length,
-        replacement: numericValue.toString()
-      });
-      evaluatedCalls++;
-    }
+    replacements.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      replacement: parseInt(stringContent, 10).toString()
+    });
   }
 
   let result = code;
@@ -42,7 +36,7 @@ export function evaluateParseInt(code: string): EvaluateParseIntResult {
     success: true,
     stats: {
       totalCalls,
-      evaluatedCalls
+      evaluatedCalls: totalCalls
     }
   };
 }

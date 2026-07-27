@@ -2,8 +2,8 @@ import { Command } from 'commander';
 import { readFileSync, writeFileSync } from 'fs';
 import { unwrapEval } from './steps/unwrap-eval.js';
 import { deobfuscateObfuscatorIo } from './steps/obfuscator-io.js';
-import { evaluateParseInt } from './steps/evaluate-parseint.js';
 import { evaluateConstantMath } from './steps/evaluate-constant-math.js';
+import { evaluateParseInt } from './steps/evaluate-parseint.js';
 import { runAllSteps } from './pipeline.js';
 
 export const program = new Command();

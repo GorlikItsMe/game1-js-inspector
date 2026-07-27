@@ -62,25 +62,21 @@ export function evaluateConstantMath(code: string): EvaluateConstantMathResult {
       },
     });
 
-    if (expressionsEvaluated === 0) {
-      return { code, success: true, stats: { expressionsEvaluated: 0 } };
-    }
-
     const output = generate(ast, {
       retainLines: false,
       compact: false,
     });
 
     return {
-      code: output.code,
+      code: expressionsEvaluated > 0 ? output.code : code,
       success: true,
       stats: { expressionsEvaluated },
     };
   } catch (error) {
     return {
       code,
-      success: true,
-      stats: { expressionsEvaluated: 0 },
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
     };
   }
 }
