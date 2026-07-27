@@ -29,6 +29,56 @@ describe('renameIdentifiers', () => {
     expect(result.error).toContain('already exists');
   });
 
+  it('should error when target name collides with a const declaration', () => {
+    const input = `const existing = 42; const _0x1234 = () => existing + 1;`;
+    const result = renameIdentifiers(input, [
+      { name: 'existing', keywords: ['+ 1'] },
+    ]);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('already exists');
+  });
+
+  it('should error when target name collides with a function parameter', () => {
+    const input = `function calc(total) { const _0x1234 = total * 2; return _0x1234; }`;
+    const result = renameIdentifiers(input, [
+      { name: 'total', keywords: ['total * 2'] },
+    ]);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('already exists');
+  });
+
+  it('should error when target name exists in the function body scope', () => {
+    const input = `
+function _0xouter() {
+  const inner = 1;
+  return inner + 2;
+}
+    `.trim();
+    const result = renameIdentifiers(input, [
+      { name: 'inner', keywords: ['inner + 2'] },
+    ]);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('already exists');
+  });
+
+  it('should error when target name collides with a let variable', () => {
+    const input = `let counter = 0; function _0xinc() { counter++; }`;
+    const result = renameIdentifiers(input, [
+      { name: 'counter', keywords: ['counter++'] },
+    ]);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('already exists');
+  });
+
+  it('should error when target name collides with a var declaration', () => {
+    const input = `var temp = "hello"; const _0x1234 = () => temp + " world";`;
+    const result = renameIdentifiers(input, [
+      { name: 'temp', keywords: ['" world"'] },
+    ]);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('already exists');
+  });
+
   it('should rename function by matching keywords in body', () => {
     const input = `function a0_0x1234() { return new XMLHttpRequest(); }`;
     const result = renameIdentifiers(input, [
