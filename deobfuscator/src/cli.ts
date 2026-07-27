@@ -4,6 +4,8 @@ import { unwrapEval } from './steps/unwrap-eval.js';
 import { deobfuscateObfuscatorIo } from './steps/obfuscator-io.js';
 import { evaluateConstantMath } from './steps/evaluate-constant-math.js';
 import { evaluateParseInt } from './steps/evaluate-parseint.js';
+import { renameIdentifiers } from './steps/rename-identifiers.js';
+import { defaultRenameRules } from './rename-rules.js';
 import { runAllSteps } from './pipeline.js';
 
 export const program = new Command();
@@ -112,6 +114,23 @@ program
       evaluateConstantMath,
       (stats) => {
         console.log(`  Constant expressions evaluated: ${stats.expressionsEvaluated}`);
+      }
+    );
+  });
+
+program
+  .command('rename-identifiers')
+  .description('Rename variables/functions by keyword-matched rules')
+  .argument('<input>', 'Input file path')
+  .argument('[output]', 'Output file path (default: <input>.renamed.js)')
+  .action((input: string, output?: string) => {
+    runSingleCommand(
+      input,
+      output,
+      '.renamed.js',
+      (code) => renameIdentifiers(code, defaultRenameRules),
+      (stats) => {
+        console.log(`  Identifiers renamed: ${stats.renamesApplied}`);
       }
     );
   });
