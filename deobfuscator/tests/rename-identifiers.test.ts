@@ -283,7 +283,7 @@ function _0xfetch() {
     expect(result.error).toContain('already renamed');
   });
 
-  it('should skip override when canBeOverwritten is true', () => {
+  it('should allow overwrite when previous rule has canBeOverwritten', () => {
     const input = `
 function _0xfetch() {
   const xhr = new XMLHttpRequest();
@@ -292,13 +292,14 @@ function _0xfetch() {
 }
     `.trim();
     const result = renameIdentifiers(input, [
-      { name: 'fetchServerTime', keywords: ['XMLHttpRequest', 'getResponseHeader'] },
-      { name: 'GAME1_URL', keywords: ['gameforge.com', 'game1.js'], canBeOverwritten: true },
+      { name: 'fetchServerTime', keywords: ['XMLHttpRequest', 'getResponseHeader'], canBeOverwritten: true },
+      { name: 'GAME1_URL', keywords: ['gameforge.com', 'game1.js'] },
     ]);
 
     expect(result.success).toBe(true);
-    expect(result.stats?.renamesApplied).toBe(1);
-    expect(result.code).toContain('function fetchServerTime');
+    expect(result.stats?.renamesApplied).toBe(2);
+    expect(result.code).toContain('function GAME1_URL');
+    expect(result.code).not.toContain('function fetchServerTime');
   });
 
   it('should return unchanged code with empty rules', () => {

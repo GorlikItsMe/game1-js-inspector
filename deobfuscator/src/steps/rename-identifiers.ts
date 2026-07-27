@@ -71,7 +71,7 @@ export function renameIdentifiers(
     });
 
     let totalRenames = 0;
-    const usedTargetNames = new Set<string>();
+    const usedTargetNames = new Map<string, boolean>();
 
     for (const rule of activeRules) {
       const candidates: Array<{ oldName: string; scope: any; path: any }> = [];
@@ -151,14 +151,13 @@ export function renameIdentifiers(
       if (candidates.length === 1) {
         const { oldName, scope } = candidates[0];
         if (usedTargetNames.has(oldName)) {
-          if (rule.canBeOverwritten) {
-            continue;
+          if (!usedTargetNames.get(oldName)) {
+            return {
+              code,
+              success: false,
+              error: `Rule "${rule.name}" matched "${oldName}", which was already renamed by a previous rule.`,
+            };
           }
-          return {
-            code,
-            success: false,
-            error: `Rule "${rule.name}" matched "${oldName}", which was already renamed by a previous rule.`,
-          };
         }
         if (scope.getBinding(rule.name)) {
           return {
@@ -167,8 +166,9 @@ export function renameIdentifiers(
             error: `Cannot rename "${oldName}" to "${rule.name}": "${rule.name}" already exists in scope.`,
           };
         }
+        usedTargetNames.delete(oldName);
         scope.rename(oldName, rule.name);
-        usedTargetNames.add(rule.name);
+        usedTargetNames.set(rule.name, rule.canBeOverwritten === true);
         totalRenames++;
       }
     }
