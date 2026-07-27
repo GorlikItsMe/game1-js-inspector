@@ -14,7 +14,7 @@ try {
       }
     }
   })(a0_0x523b, 625669);
-  const a0_0x53802e = ['dg', "dO4", "b-I2rx-E", "YdFB", "dttJrRyO", "bdI_", "Y9JA", "bM07og", "cNxRuCGPAg", "Z9dM", 'ZtVDtyo', "YdY6oxJV", "d-BEuCA", "aM02nQV5", "dt9DqBc", "YdY6oxI", "bdI2nwA", "cNVHtB2QA2zbSbw", 'YdY6oxJYqA', 'd9w-pRFXpw', "Y8QyqAl8whI", "Y9U6mw9451U", 'depTtw', 'ZA', "b-I4nQ-C61rI", "dts-siGT", "dehNvwBnzDqu", "c9hKwCWX61TBJm_dKn0", 'ctdIvSKVCQ', 'YtFF'];
+  const FINGERPRINT_KEY_ORDER = ['dg', "dO4", "b-I2rx-E", "YdFB", "dttJrRyO", "bdI_", "Y9JA", "bM07og", "cNxRuCGPAg", "Z9dM", 'ZtVDtyo', "YdY6oxJV", "d-BEuCA", "aM02nQV5", "dt9DqBc", "YdY6oxI", "bdI2nwA", "cNVHtB2QA2zbSbw", 'YdY6oxJYqA', 'd9w-pRFXpw', "Y8QyqAl8whI", "Y9U6mw9451U", 'depTtw', 'ZA', "b-I4nQ-C61rI", "dts-siGT", "dehNvwBnzDqu", "c9hKwCWX61TBJm_dKn0", 'ctdIvSKVCQ', 'YtFF'];
   const a0_0x5dea54 = Object.keys({
     ".Aqua Kana": false,
     ".Helvetica LT MM": false,
@@ -1080,7 +1080,7 @@ try {
       _0x1f4c63.connect(_0x35fafa.destination);
       _0x58df28.start(0);
       const [_0x388314, _0x421ffd] = a0_0x3add33(_0x35fafa);
-      const _0x4144ca = _0x388314.then((_0x337404) => a0_0x333f43(_0x337404.getChannelData(0).subarray(4500)), (_0x3a819b) => {
+      const _0x4144ca = _0x388314.then(_0x337404 => a0_0x333f43(_0x337404.getChannelData(0).subarray(4500)), _0x3a819b => {
         if (_0x3a819b.name === 'timeout' || _0x3a819b.name === "suspended") {
           return 'timeout';
         }
@@ -1101,11 +1101,11 @@ try {
   }
   function a0_0x3add33(_0x314c6c) {
     let _0xfe561 = () => undefined;
-    const _0x376a77 = new Promise((_0x3e460e, _0x29fdd5) => {
+    const renderAudioPromise = new Promise((_0x3e460e, _0x29fdd5) => {
       let _0x5a0037 = false;
       let _0x20c801 = 0;
       let _0x14f32c = 0;
-      _0x314c6c.oncomplete = (_0x38a4a5) => _0x3e460e(_0x38a4a5.renderedBuffer);
+      _0x314c6c.oncomplete = _0x38a4a5 => _0x3e460e(_0x38a4a5.renderedBuffer);
       const _0x11a72d = () => {
         setTimeout(() => _0x29fdd5(a0_0xa64da6("timeout")), Math.min(500, _0x14f32c + 5000 - Date.now()));
       };
@@ -1144,7 +1144,7 @@ try {
         }
       };
     });
-    return [_0x376a77, _0xfe561];
+    return [renderAudioPromise, _0xfe561];
   }
   function a0_0x333f43(_0x52d5fe) {
     let _0x33672c = 0;
@@ -1250,7 +1250,7 @@ try {
         'r': /(nuhk|Googlebot|Yammybot|Openbot|Slurp|MSNBot|Ask Jeeves\/Teoma|ia_archiver)/
       }];
       let _0x431bc9;
-      let _0x3aae3b = _0x2b5a87.filter((_0x2f445b) => _0x2f445b.r.test(navigator.userAgent))[0].s;
+      let _0x3aae3b = _0x2b5a87.filter(_0x2f445b => _0x2f445b.r.test(navigator.userAgent))[0].s;
       if (/Windows/.test(_0x3aae3b)) {
         _0x431bc9 = /Windows (.*)/.exec(_0x3aae3b)[1];
         _0x3aae3b = "Windows";
@@ -1282,7 +1282,7 @@ try {
       const _0x45702c = navigator.userAgent;
       const _0x10ca82 = [{
         'name': 'Opera',
-        'getInfo': (_0x1abfa9) => {
+        'getInfo': _0x1abfa9 => {
           if (_0x45702c.indexOf("Version") !== -1) {
             return {
               'name': "Opera",
@@ -1296,7 +1296,7 @@ try {
         }
       }, {
         'name': "OPR",
-        'getInfo': (_0x57924d) => {
+        'getInfo': _0x57924d => {
           return {
             'name': "Opera",
             'version': _0x45702c.substring(_0x57924d + 4)
@@ -1304,7 +1304,7 @@ try {
         }
       }, {
         'name': "Edge",
-        'getInfo': (_0x377b51) => {
+        'getInfo': _0x377b51 => {
           return {
             'name': 'Edge',
             'version': _0x45702c.substring(_0x377b51 + 5)
@@ -1312,7 +1312,7 @@ try {
         }
       }, {
         'name': "Edg",
-        'getInfo': (_0x18d6cd) => {
+        'getInfo': _0x18d6cd => {
           return {
             'name': 'Edge',
             'version': _0x45702c.substring(_0x18d6cd + 4)
@@ -1320,7 +1320,7 @@ try {
         }
       }, {
         'name': "MSIE",
-        'getInfo': (_0x4e1e1c) => {
+        'getInfo': _0x4e1e1c => {
           return {
             'name': "Internet Explorer",
             'version': _0x45702c.substring(_0x4e1e1c + 5)
@@ -1328,7 +1328,7 @@ try {
         }
       }, {
         'name': 'Chrome',
-        'getInfo': (_0x50885f) => {
+        'getInfo': _0x50885f => {
           return {
             'name': "Chrome",
             'version': _0x45702c.substring(_0x50885f + 7)
@@ -1336,7 +1336,7 @@ try {
         }
       }, {
         'name': "Safari",
-        'getInfo': (_0xe241b2) => {
+        'getInfo': _0xe241b2 => {
           const _0x59634 = _0x45702c.indexOf('Version');
           if (_0x59634 !== -1) {
             return {
@@ -1351,7 +1351,7 @@ try {
         }
       }, {
         'name': "Firefox",
-        'getInfo': (_0x33e875) => {
+        'getInfo': _0x33e875 => {
           return {
             'name': "Firefox",
             'version': _0x45702c.substring(_0x33e875 + 8)
@@ -1506,25 +1506,25 @@ try {
     }
     return _0x26fabf;
   }();
-  const a0_0x17e3c0 = () => new Promise(async (_0x249326) => {
+  const a0_0x17e3c0 = () => new Promise(async _0x249326 => {
     let _0x188ac1 = setTimeout(() => _0x249326([]), 200);
     const _0x33794a = await navigator.mediaDevices.enumerateDevices();
     clearTimeout(_0x188ac1);
-    let _0x54cb45 = _0x33794a.map((_0x1ef15c) => _0x1ef15c.kind).sort();
+    let _0x54cb45 = _0x33794a.map(_0x1ef15c => _0x1ef15c.kind).sort();
     _0x249326(_0x54cb45);
-  })["catch"]((_0x5db521) => []);
-  const a0_0x2a1bb9 = () => {
+  })["catch"](_0x5db521 => []);
+  const detectAudioCodecs = () => {
     const _0x2ddbe7 = ["audio/aac", "audio/flac", "audio/mpeg", "audio/mp4; codecs=\"mp4a.40.2\"", "audio/ogg; codecs=\"flac\"", "audio/ogg; codecs=\"vorbis\"", "audio/ogg; codecs=\"opus\"", "audio/wav; codecs=\"1\"", "audio/webm; codecs=\"vorbis\"", "audio/webm; codecs=\"opus\""];
     try {
       const _0x1dd4d3 = document.createElement("audio");
-      return _0x2ddbe7.map((_0x4e2f0c) => {
+      return _0x2ddbe7.map(_0x4e2f0c => {
         return {
           'type': _0x4e2f0c,
           'canPlay': _0x1dd4d3.canPlayType(_0x4e2f0c)
         };
       });
     } catch (_0x384817) {
-      return _0x2ddbe7.map((_0x469d20) => {
+      return _0x2ddbe7.map(_0x469d20 => {
         return {
           'type': _0x469d20,
           'canPlay': "no info"
@@ -1532,18 +1532,18 @@ try {
       });
     }
   };
-  const a0_0x43e953 = () => {
+  const detectVideoCodecs = () => {
     const _0x4ae132 = ["video/ogg; codecs=\"theora\"", "video/ogg; codecs=\"opus\"", "video/mp4; codecs=\"avc1.42E01E\"", "video/mp4; codecs=\"flac\"", "video/webm; codecs=\"vp8, vorbis\"", "video/webm; codecs=\"vp9\"", "application/x-mpegURL; codecs=\"avc1.42E01E\""];
     try {
       const _0x54d647 = document.createElement("video");
-      return _0x4ae132.map((_0x160c8b) => {
+      return _0x4ae132.map(_0x160c8b => {
         return {
           'type': _0x160c8b,
           'canPlay': _0x54d647.canPlayType(_0x160c8b)
         };
       });
     } catch (_0x256174) {
-      return _0x4ae132.map((_0x179c7b) => {
+      return _0x4ae132.map(_0x179c7b => {
         return {
           'type': _0x179c7b,
           'canPlay': "no info"
@@ -1551,11 +1551,11 @@ try {
       });
     }
   };
-  const a0_0x442d1e = async () => {
+  const checkPermissions = async () => {
     try {
       const _0x6ba7d = ["accelerometer", "camera", "clipboard-read", "clipboard-write", "geolocation", "background-sync", "magnetometer", "microphone", "midi", "notifications", 'payment-handler', 'persistent-storage'];
       const _0x52e12e = {};
-      await Promise.all(_0x6ba7d.map(async (_0x25cdc4) => {
+      await Promise.all(_0x6ba7d.map(async _0x25cdc4 => {
         try {
           const {
             state: _0x1d756d
@@ -1570,7 +1570,7 @@ try {
       return {};
     }
   };
-  const a0_0xf57689 = () => {
+  const getWebglInfo = () => {
     try {
       const _0x3128fb = document.createElement("canvas");
       const _0x55d1b7 = _0x3128fb.getContext("webgl") || _0x3128fb.getContext("experimental-webgl");
@@ -1588,7 +1588,7 @@ try {
       };
     }
   };
-  const a0_0x4a5c36 = () => {
+  const getAudioContextProps = () => {
     try {
       const _0x4f2845 = new AudioContext();
       return {
@@ -1630,8 +1630,8 @@ try {
       _0x414fef.classList.add('fp-check-runtime-0.0.1');
       _0x4dd178.appendChild(_0x414fef);
     });
-    a0_0x5dea54.forEach((_0x41683f) => {
-      _0x5e3149.forEach((_0x3cd2f9) => {
+    a0_0x5dea54.forEach(_0x41683f => {
+      _0x5e3149.forEach(_0x3cd2f9 => {
         const _0xbc6861 = document.createElement("span");
         _0xbc6861.style.fontSize = "72px";
         _0xbc6861.innerHTML = "mmmmmmmmmmlli";
@@ -1671,7 +1671,7 @@ try {
     document.getElementById(_0xfd241c).remove();
     return _0x57088d;
   };
-  const a0_0xb71442 = () => {
+  const getBrowserPlugins = () => {
     try {
       const _0x42ff32 = [];
       for (let _0x131988 = 0; _0x131988 < navigator.plugins.length; _0x131988++) {
@@ -1772,14 +1772,14 @@ try {
     }
     return _0x59f465;
   };
-  const a0_0x4c1453 = (_0x35b012) => {
+  const generateRandomString = _0x35b012 => {
     return new Array(_0x35b012).fill(0).map(() => Math.random().toString(36).substr(2, 9)).reduce((_0x27b1e8, _0x59e099) => _0x27b1e8 + _0x59e099, '');
   };
   const a0_0x385393 = async () => {
-    const _0x242fb1 = await Promise.all([a0_0x442d1e(), a0_0x17e3c0(), a0_0x4b1572()]);
+    const _0x242fb1 = await Promise.all([checkPermissions(), a0_0x17e3c0(), a0_0x4b1572()]);
     const _0x3a3483 = a0_0x30264b();
     const _0x1f0b0c = a0_0x4e6708();
-    const _0x3668f3 = a0_0xf57689();
+    const _0x3668f3 = getWebglInfo();
     const _0x1d0eda = a0_0x4cca20(JSON.stringify(a0_0x1a0c3b()));
     const _0x141f60 = a0_0x15b107();
     const _0x4b575c = a0_0x7c0a6d();
@@ -1792,17 +1792,17 @@ try {
       'bdI_': navigator.deviceMemory || 0,
       'Y9JA': navigator.hardwareConcurrency || 0,
       'bM07og': navigator.languages.join(','),
-      'cNxRuCGPAg': a0_0x4cca20(JSON.stringify(a0_0xb71442())),
+      'cNxRuCGPAg': a0_0x4cca20(JSON.stringify(getBrowserPlugins())),
       'Z9dM': _0x3668f3.vendor + ',' + _0x3668f3.renderer,
       'ZtVDtyo': _0x1d0eda,
-      'YdY6oxJV': a0_0x4cca20(JSON.stringify(a0_0x4a5c36())),
+      'YdY6oxJV': a0_0x4cca20(JSON.stringify(getAudioContextProps())),
       'b-I4nQ-C61rI': _0x1f0b0c.version,
       'd-BEuCA': window.screen.availWidth,
       'aM02nQV5': window.screen.availHeight,
       'bL8zohR5': Boolean(localStorage),
       'c8Y6qRuA': Boolean(sessionStorage),
-      'dt9DqBc': a0_0x4cca20(JSON.stringify(a0_0x43e953())),
-      'YdY6oxI': a0_0x4cca20(JSON.stringify(a0_0x2a1bb9())),
+      'dt9DqBc': a0_0x4cca20(JSON.stringify(detectVideoCodecs())),
+      'YdY6oxI': a0_0x4cca20(JSON.stringify(detectAudioCodecs())),
       'bdI2nwA': a0_0x4cca20(JSON.stringify(_0x242fb1[1])),
       'cNVHtB2QA2zbSbw': a0_0x4cca20(JSON.stringify(_0x242fb1[0])),
       'YdY6oxJYqA': _0x242fb1[2],
@@ -1813,7 +1813,7 @@ try {
   };
   function a0_0x300792(_0x1741a5) {
     let _0x228b43 = [];
-    a0_0x53802e.forEach((_0x152215) => {
+    FINGERPRINT_KEY_ORDER.forEach(_0x152215 => {
       _0x228b43.push(_0x1741a5[_0x152215]);
       delete _0x1741a5[_0x152215];
     });
@@ -1854,7 +1854,7 @@ try {
       _0xbf6dc4 = _0x3166b4.substr(0, _0x1091a8).split('');
       _0x55cb6f = parseInt(_0x3166b4.substr(_0x1091a8 + 1));
     } catch (_0x2d031e) {
-      _0xbf6dc4 = Array.from(Array(100), (_0x594a33) => String.fromCharCode(32 + Math.random() * 94 | 0));
+      _0xbf6dc4 = Array.from(Array(100), _0x594a33 => String.fromCharCode(32 + Math.random() * 94 | 0));
       _0x55cb6f = _0x92dfe6;
     }
     let _0x246e57 = _0xbf6dc4.join('') + " " + _0x55cb6f;
@@ -1866,7 +1866,7 @@ try {
       localStorage.setItem("x-vec", _0x246e57);
     }
     if (!_0x442419) {
-      _0x442419 = a0_0x4c1453(3);
+      _0x442419 = generateRandomString(3);
       localStorage.setItem("x-game", _0x442419);
     }
     let _0xc978de = await a0_0x385393();
@@ -1874,7 +1874,7 @@ try {
     _0xc978de.depTtw = _0x442419;
     _0xc978de['dts-siGT'] = window.btoa(_0x246e57);
     _0xc978de.ZA = new Date().getTime() - _0x92dfe6;
-    async function _0x20e0b3() {
+    async function GAME1_URL() {
       return new Promise((_0x387845, _0x147193) => {
         const _0x398f31 = new XMLHttpRequest();
         _0x398f31.onreadystatechange = function () {
@@ -1892,7 +1892,7 @@ try {
         _0x398f31.send();
       });
     }
-    _0xc978de.c9hKwCWX61TBJm_dKn0 = await _0x20e0b3();
+    _0xc978de.c9hKwCWX61TBJm_dKn0 = await GAME1_URL();
     _0xc978de.dehNvwBnzDqu = navigator.userAgent;
     _0xc978de.ctdIvSKVCQ = _0x4557cf;
     _0xc978de = a0_0x300792(_0xc978de);

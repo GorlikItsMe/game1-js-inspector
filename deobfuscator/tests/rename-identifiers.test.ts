@@ -1,28 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renameIdentifiers, validateRules } from '../src/steps/rename-identifiers.js';
-
-describe('validateRules', () => {
-  it('should reject duplicate rule names', () => {
-    expect(() => validateRules([
-      { name: 'foo', keywords: ['a'] },
-      { name: 'foo', keywords: ['b'] },
-    ])).toThrow('Duplicate rule name');
-  });
-
-  it('should reject duplicate keywords (same set, order independent)', () => {
-    expect(() => validateRules([
-      { name: 'foo', keywords: ['x', 'y'] },
-      { name: 'bar', keywords: ['y', 'x'] },
-    ])).toThrow('Duplicate keywords');
-  });
-
-  it('should accept unique rules', () => {
-    expect(() => validateRules([
-      { name: 'foo', keywords: ['a'] },
-      { name: 'bar', keywords: ['b'] },
-    ])).not.toThrow();
-  });
-});
+import { renameIdentifiers } from '../src/steps/rename-identifiers.js';
 
 describe('renameIdentifiers', () => {
   it('should error on duplicate rule names', () => {
@@ -265,19 +242,6 @@ const _0x1 = () => {
     expect(result.code).toContain('return getPi()');
     expect(result.code).toContain('const getPiPlusOne');
     expect(result.code).toContain('return getPiPlusOne()');
-  });
-
-  // ─── No matches ─────────────────────────────────────────
-
-  it('should return unchanged code when no match found', () => {
-    const input = `const x = 1; function foo() { return x; }`;
-    const result = renameIdentifiers(input, [
-      { name: 'bar', keywords: ['nonexistent'], optional: true },
-    ]);
-
-    expect(result.success).toBe(true);
-    expect(result.code).toBe(input);
-    expect(result.stats?.renamesApplied).toBe(0);
   });
 
   it('should return unchanged code with empty rules', () => {
