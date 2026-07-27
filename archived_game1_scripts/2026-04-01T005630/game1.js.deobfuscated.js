@@ -1060,7 +1060,7 @@ try {
     'mry_KacstQurn': false,
     'ori1Uni': false
   });
-  const a0_0x4c4714 = () => {
+  const getAudioFingerprint = () => {
     try {
       const _0x109cff = window.OfflineAudioContext || window.webkitOfflineAudioContext;
       if (!_0x109cff) {
@@ -1152,7 +1152,7 @@ try {
     _0x585ec4.name = _0x13c09f;
     return _0x585ec4;
   }
-  const a0_0x36f88f = () => {
+  const detectOS = () => {
     try {
       const _0x20c5c7 = [{
         's': "Windows 10",
@@ -1264,7 +1264,7 @@ try {
       };
     }
   };
-  const a0_0x471bfa = () => {
+  const detectBrowser = () => {
     try {
       const _0x129ece = navigator.userAgent;
       const _0x530846 = [{
@@ -1366,7 +1366,7 @@ try {
       };
     }
   };
-  const a0_0x19fdfc = () => {
+  const getCanvas2dFingerprint = () => {
     try {
       const _0x1fade6 = document.createElement("canvas");
       const _0x3e5e03 = _0x1fade6.getContext('2d');
@@ -1399,7 +1399,7 @@ try {
       return -1;
     }
   };
-  const a0_0x4be17b = () => {
+  const getWebglCanvasFingerprint = () => {
     try {
       const _0x4700cd = document.createElement("canvas");
       _0x4700cd.width = 256;
@@ -1493,7 +1493,7 @@ try {
     }
     return _0x592b2c;
   }();
-  const a0_0x49af4d = () => new Promise(async _0x13473d => {
+  const enumerateMediaDevices = () => new Promise(async _0x13473d => {
     let _0x547e92 = setTimeout(() => _0x13473d([]), 200);
     const _0x43e096 = await navigator.mediaDevices.enumerateDevices();
     clearTimeout(_0x547e92);
@@ -1592,7 +1592,7 @@ try {
       return {};
     }
   };
-  const a0_0x449b36 = () => {
+  const detectFonts = () => {
     const _0x3cd5e8 = document.getElementsByTagName("body")[0];
     const _0x1af15d = document.createElement('div');
     let _0x4e7397 = document.createDocumentFragment();
@@ -1670,7 +1670,7 @@ try {
       return [];
     }
   };
-  const a0_0x2f9d4e = () => {
+  const detectAutomation = () => {
     let _0xb5cfe1 = 0;
     try {
       if (navigator.webdriver === true) {
@@ -1764,13 +1764,13 @@ try {
     return new Array(_0xa8d2bc).fill(0).map(() => Math.random().toString(36).substr(2, 9)).reduce((_0x361881, _0x2ce132) => _0x361881 + _0x2ce132, '');
   };
   const a0_0x3707e2 = async () => {
-    const _0x35ede7 = await Promise.all([checkPermissions(), a0_0x49af4d(), a0_0x4c4714()]);
-    const _0x1b77ae = a0_0x471bfa();
-    const _0x126ce4 = a0_0x36f88f();
+    const _0x35ede7 = await Promise.all([checkPermissions(), enumerateMediaDevices(), getAudioFingerprint()]);
+    const _0x1b77ae = detectBrowser();
+    const _0x126ce4 = detectOS();
     const _0x2e4922 = getWebglInfo();
-    const _0x401876 = a0_0x32c22a(JSON.stringify(a0_0x449b36()));
-    const _0x11612d = a0_0x4be17b();
-    const _0x2c2432 = a0_0x19fdfc();
+    const _0x401876 = a0_0x32c22a(JSON.stringify(detectFonts()));
+    const _0x11612d = getWebglCanvasFingerprint();
+    const _0x2c2432 = getCanvas2dFingerprint();
     return {
       'dg': 12,
       'dO4': Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -1796,7 +1796,7 @@ try {
       'YdY6oxJYqA': _0x35ede7[2],
       'd9w-pRFXpw': _0x11612d,
       'Y8QyqAl8whI': _0x2c2432,
-      'YtFF': a0_0x2f9d4e()
+      'YtFF': detectAutomation()
     };
   };
   function a0_0x3578() {
@@ -1820,7 +1820,7 @@ try {
     });
     return _0x556f3b;
   }
-  function a0_0xf5598d(_0x4eff33) {
+  function encodeFingerprintHash(_0x4eff33) {
     const _0x27a744 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_='.split('');
     const _0x53abb3 = function (_0x72f313) {
       let _0x20fa70 = '';
@@ -1897,7 +1897,7 @@ try {
     _0x17efe9.dehNvwBnzDqu = navigator.userAgent;
     _0x17efe9.ctdIvSKVCQ = _0x3b0e5c;
     _0x17efe9 = a0_0x2fccbc(_0x17efe9);
-    let _0x27cdbd = a0_0xf5598d(JSON.stringify(_0x17efe9));
+    let _0x27cdbd = encodeFingerprintHash(JSON.stringify(_0x17efe9));
     _0x447f01(_0x27cdbd);
   };
 } catch (e) {

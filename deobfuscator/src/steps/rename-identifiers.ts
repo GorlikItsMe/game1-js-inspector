@@ -70,6 +70,7 @@ export function renameIdentifiers(
     });
 
     let totalRenames = 0;
+    const usedTargetNames = new Set<string>();
 
     for (const rule of activeRules) {
       const candidates: Array<{ oldName: string; scope: any; path: any }> = [];
@@ -110,7 +111,7 @@ export function renameIdentifiers(
         },
       });
 
-      if (candidates.length === 0 && !rule.optional) {
+      if (candidates.length === 0 && rule.optional === false) {
         return {
           code,
           success: false,
@@ -148,6 +149,16 @@ export function renameIdentifiers(
 
       if (candidates.length === 1) {
         const { oldName, scope } = candidates[0];
+        if (usedTargetNames.has(oldName)) {
+          if (rule.optional === false) {
+            return {
+              code,
+              success: false,
+              error: `Rule "${rule.name}" matched "${oldName}", which was already renamed by a previous rule.`,
+            };
+          }
+          continue;
+        }
         if (scope.getBinding(rule.name)) {
           return {
             code,
@@ -156,6 +167,7 @@ export function renameIdentifiers(
           };
         }
         scope.rename(oldName, rule.name);
+        usedTargetNames.add(rule.name);
         totalRenames++;
       }
     }

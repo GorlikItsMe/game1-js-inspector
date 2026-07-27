@@ -166,7 +166,7 @@ var game1 = async function() {
   it('should error when non-optional rule matches nothing', () => {
     const input = `const x = 1;`;
     const result = renameIdentifiers(input, [
-      { name: 'NON_EXISTENT', keywords: ['nonexistent'] },
+      { name: 'NON_EXISTENT', keywords: ['nonexistent'], optional: false },
     ]);
 
     expect(result.success).toBe(false);
@@ -242,6 +242,45 @@ const _0x1 = () => {
     expect(result.code).toContain('return getPi()');
     expect(result.code).toContain('const getPiPlusOne');
     expect(result.code).toContain('return getPiPlusOne()');
+  });
+
+  // ─── Override protection ─────────────────────────────────
+
+  it('should error when a rule tries to rename an already-renamed identifier', () => {
+    const input = `
+const _0xurl = "https://example.com/script.js";
+function _0xfetch() {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", _0xurl, true);
+  return xhr.getResponseHeader("date");
+}
+    `.trim();
+    const result = renameIdentifiers(input, [
+      { name: 'fetchServerTime', keywords: ['XMLHttpRequest', 'getResponseHeader'] },
+      { name: 'SCRIPT_URL', keywords: ['example.com', 'script.js'] },
+    ]);
+
+    expect(result.success).toBe(true);
+    expect(result.stats?.renamesApplied).toBe(2);
+    expect(result.code).toContain('function fetchServerTime');
+    expect(result.code).toContain('const SCRIPT_URL =');
+  });
+
+  it('should error when second rule matches already-renamed identifier', () => {
+    const input = `
+function _0xfetch() {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", "https://gameforge.com/tra/game1.js", true);
+  return xhr.getResponseHeader("date");
+}
+    `.trim();
+    const result = renameIdentifiers(input, [
+      { name: 'fetchServerTime', keywords: ['XMLHttpRequest', 'getResponseHeader'] },
+      { name: 'GAME1_URL', keywords: ['gameforge.com', 'game1.js'], optional: false },
+    ]);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('already renamed');
   });
 
   it('should return unchanged code with empty rules', () => {
